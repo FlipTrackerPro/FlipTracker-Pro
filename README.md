@@ -1,29 +1,42 @@
-# FlipTracker Pro — Sprint 1
-
-## Install
-
-1. Create a blank Google Sheet.
-2. Open **Extensions → Apps Script**.
-3. Delete the default code in `Code.gs`.
-4. Paste the contents of `FlipTrackerPro_Sprint1.gs`.
-5. Save.
-6. Select `initializeFlipTrackerPro` from the function menu.
-7. Click **Run** and approve the Google authorization prompt.
-8. Return to the spreadsheet and refresh it.
-
-The **FlipTracker Pro** custom menu will appear.
+# FlipTracker Pro — Sprint 2 Inventory Engine
 
 ## Included
 
-- Dashboard KPI cards
-- Inventory sheet with 25 columns
-- Automatic Item IDs
-- Total Cost, Projected Profit, ROI, and Days in Inventory formulas
-- Drop-down menus from Admin
-- Borders and centred headers
-- Filters and frozen panes
-- Status and aging colour coding
-- Settings
-- Sales, Expenses, Mileage, CRA Tax Centre and Reports foundations
+- Add Inventory Item form
+- Edit Selected Item workflow
+- Stable sequential Item IDs
+- Search by Item ID, title, SKU, or barcode
+- Slow-inventory filter
+- 30-, 60-, and 90-day aging colours
+- Automatic Total Cost
+- Automatic Projected Profit
+- Automatic Projected ROI
+- Automatic Days in Inventory
+- Created and Updated timestamps
+- Improved Dashboard KPI cards
+- Admin-managed validation lists
 
-Use a blank or test spreadsheet for the first installation.
+## Installation
+
+1. Open your FlipTracker Pro Google Sheet.
+2. Open **Extensions → Apps Script**.
+3. Keep a backup copy of the Sprint 1 code.
+4. Replace the contents of `Code.gs` with `FlipTrackerPro_Sprint2.gs`.
+5. Save the project.
+6. Run `initializeFlipTrackerProSprint2`.
+7. Approve permissions if requested.
+8. Refresh the spreadsheet.
+
+## Using Sprint 2
+
+Use the **FlipTracker Pro** menu to:
+
+- Add Inventory Item
+- Edit Selected Item
+- Find Item
+- Show Slow Inventory
+- Refresh Dashboard
+
+## Important
+
+Test Sprint 2 on a copy of your workbook before using it with irreplaceable business data.
