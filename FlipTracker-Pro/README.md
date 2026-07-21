@@ -1,32 +1,24 @@
 # FlipTracker Pro
 
-FlipTracker Pro is a Google Sheets business-management system for resellers.
-Google Sheets stores the business data, while Google Apps Script provides menus,
-forms, calculations, validation, dashboards, and automation.
+FlipTracker Pro is a Google Sheets and Google Apps Script business-management
+system for resellers.
 
-## Repository layout
+## Current release: v0.3 — Sprint 3
+
+Sprint 3 adds connected sales, expenses, mileage, packaging supplies, and realized
+profit reporting.
+
+## Repository structure
 
 ```text
 apps-script/
-  Sprint1/                 Original workbook foundation
+  Sprint1/
   Sprint2/
-    src/                   Organized multi-file Apps Script source
-    dist/                  Single-file installable build
+  Sprint3/
+    src/
+    dist/
 docs/
-  ROADMAP.md
 releases/
-  RELEASES.md
 ```
 
-## Current release
-
-Sprint 2 adds the Inventory Engine. Start with
-`apps-script/Sprint2/README.md`.
-
-## Development rule
-
-Each sprint keeps:
-- organized source files,
-- a single-file distribution build,
-- installation instructions,
-- a sprint changelog.
+Open `apps-script/Sprint3/README.md` for installation instructions.
