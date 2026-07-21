@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.4.2 — Packaging Integration
+- Expanded Packaging into a master supply inventory.
+- Added packaging IDs, categories, item names, units of measure, supplier SKUs, and active status.
+- Added sales fields for box, bubble wrap, mailer, tape, and other packaging usage.
+- Automatically calculates packaging cost and includes it in realized profit.
+- Automatically deducts packaging stock with negative-stock protection.
+- Added low-stock highlighting and dashboard packaging metrics.
+- Added schema 4.2 migration preserving existing Sales and Packaging rows.
+- Preserved all v0.4.1 audited calculation fixes.
+
+# Changelog
+
 ## v0.4.1 — Calculation Audit Fixes
 - Corrected GST/HST treatment in realized profit.
 - Rebuilt Tax Centre calculations using reliable date-based Apps Script logic.

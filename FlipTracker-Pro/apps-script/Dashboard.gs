@@ -45,6 +45,15 @@ function buildDashboardSprint3_() {
     .setFontWeight('bold').setFontSize(16).setNumberFormat('$#,##0.00')
     .setHorizontalAlignment('center');
 
+  s.getRange('A23:H23').merge().setValue('Packaging Inventory');header3_(s.getRange('A23:H23'));
+  const pkgCards=[
+    ['A24:B26','Packaging Inventory Value','SUMPRODUCT(Packaging!H2:H,Packaging!I2:I)','$#,##0.00'],
+    ['C24:D26','Low-Stock Supplies','COUNTIFS(Packaging!A2:A,"<>",Packaging!N2:N,"Yes",Packaging!I2:I,"<="&Packaging!J2:J)','0'],
+    ['E24:F26','Packaging Cost This Year','SUMIFS(Sales!H2:H,Sales!C2:C,">="&DATE(YEAR(TODAY()),1,1),Sales!C2:C,"<"&DATE(YEAR(TODAY())+1,1,1))','$#,##0.00'],
+    ['G24:H26','Average Packaging / Sale','IFERROR(AVERAGE(FILTER(Sales!H2:H,Sales!A2:A<>"")),0)','$#,##0.00']
+  ];
+  pkgCards.forEach(([a1,title,formula,fmt])=>{const r=s.getRange(a1);r.merge();r.getCell(1,1).setFormula(`="${title}"&CHAR(10)&TEXT(${formula},"${fmt}")`);r.setBackground(FTP3.COLORS.GOLD).setFontColor(FTP3.COLORS.TEXT).setFontWeight('bold').setFontSize(13).setWrap(true).setHorizontalAlignment('center').setVerticalAlignment('middle').setBorder(true,true,true,true,false,false,FTP3.COLORS.BORDER,SpreadsheetApp.BorderStyle.SOLID_MEDIUM);});
+
   s.setColumnWidths(1,8,120);
   s.setFrozenRows(2);
 }

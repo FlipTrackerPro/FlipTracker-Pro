@@ -78,3 +78,28 @@ function activeInventoryChoices3_() {
     .filter(r => r[0] && r[2] && !['Sold','Archived'].includes(r[18]))
     .map(r => ({id:r[0], label:r[0] + ' — ' + r[2]}));
 }
+
+
+function headerMap3_(sheet) {
+  if (sheet.getLastRow() < 1) return {};
+  const headers=sheet.getRange(1,1,1,sheet.getLastColumn()).getDisplayValues()[0];
+  return headers.reduce((m,h,i)=>{if(h)m[String(h).trim()]=i+1;return m;},{});
+}
+
+function migrateSheetHeaders3_(sheetName, newHeaders, aliases) {
+  const s=sheet3_(sheetName);
+  ensureSize3_(s,Math.max(s.getMaxRows(),2),newHeaders.length);
+  if(s.getLastRow()<1){s.getRange(1,1,1,newHeaders.length).setValues([newHeaders]);return;}
+  const oldHeaders=s.getRange(1,1,1,s.getLastColumn()).getDisplayValues()[0];
+  const oldData=s.getLastRow()>1?s.getRange(2,1,s.getLastRow()-1,s.getLastColumn()).getValues():[];
+  const lookup={}; oldHeaders.forEach((h,i)=>{if(h)lookup[String(h).trim()]=i;});
+  aliases=aliases||{};
+  const migrated=oldData.map(row=>newHeaders.map(h=>{
+    const candidates=[h].concat(aliases[h]||[]);
+    const found=candidates.find(c=>Object.prototype.hasOwnProperty.call(lookup,c));
+    return found===undefined?'':row[lookup[found]];
+  }));
+  s.clear(); ensureSize3_(s,Math.max(300,migrated.length+1),newHeaders.length);
+  s.getRange(1,1,1,newHeaders.length).setValues([newHeaders]);
+  if(migrated.length)s.getRange(2,1,migrated.length,newHeaders.length).setValues(migrated);
+}

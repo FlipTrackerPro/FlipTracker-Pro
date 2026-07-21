@@ -1,6 +1,6 @@
 const FTP3 = {
   APP_NAME: 'FlipTracker Pro',
-  VERSION: '0.4.1 Audited CRA Tax Centre',
+  VERSION: '0.4.2 Packaging Integration',
   ROWS: 1000,
   SHEETS: {
     DASHBOARD:'Dashboard', INVENTORY:'Inventory', SALES:'Sales',
@@ -27,7 +27,10 @@ const FTP3 = {
     'Marketplace Fees','Payment Fees','Promotion Expense',
     'GST/HST Collected','Item Cost','Gross Revenue','Total Selling Costs',
     'Net Proceeds','Realized Profit','Realized ROI %','Days to Sell',
-    'Buyer','Tracking Number','Notes','Created At'
+    'Buyer','Tracking Number','Notes','Created At',
+    'Box Used','Box Qty','Bubble Wrap Used','Bubble Wrap Qty',
+    'Mailer Used','Mailer Qty','Tape Used','Tape Qty',
+    'Other Packaging Used','Other Packaging Qty','Packaging Verified'
   ],
   EXPENSE_HEADERS: [
     'Expense ID','Date','Category','Vendor','Description','Subtotal',
@@ -40,8 +43,9 @@ const FTP3 = {
     'Business Kilometres','CRA Rate','Claim Amount','Notes','Created At'
   ],
   PACKAGING_HEADERS: [
-    'Packaging ID','Type','Description','Size','Units Purchased',
-    'Purchase Cost','Cost Per Unit','Quantity On Hand','Reorder Level',
-    'Supplier','Product Link','Notes','Updated At'
+    'Packaging ID','Category','Item Name','Size','Unit of Measure',
+    'Units Purchased','Purchase Cost','Cost Per Unit','Quantity On Hand',
+    'Reorder Level','Supplier','Supplier SKU','Product Link','Active',
+    'Notes','Updated At'
   ]
 };

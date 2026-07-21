@@ -10,3 +10,15 @@
 - [ ] Ending inventory excludes sold items
 - [ ] Accountant Export refreshes
 - [ ] Version reports schema 4 and v0.4.0
+
+## v0.4.2 packaging
+- [ ] Existing Packaging rows migrate without data loss
+- [ ] Existing Sales rows migrate without data loss
+- [ ] Add box, bubble wrap, mailer, tape, and other supply
+- [ ] Sale form displays available stock and unit cost
+- [ ] Packaging cost equals sum of unit cost × quantity
+- [ ] Sale profit includes calculated packaging cost
+- [ ] Packaging stock deducts exactly once
+- [ ] Insufficient stock blocks the sale
+- [ ] Low-stock row highlights correctly
+- [ ] Dashboard packaging cards reconcile
