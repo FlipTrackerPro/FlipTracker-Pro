@@ -1,22 +1,10 @@
-# FlipTracker Pro Roadmap
+# Roadmap
 
-## Sprint 1 — Foundation
-Dashboard, Inventory, Admin, Settings, workbook construction, formatting, and lists.
+## v0.4 — CRA Tax Centre
+Profit and loss, COGS, inventory valuation, GST/HST, mileage summaries, accountant export.
 
-## Sprint 2 — Inventory Engine
-Forms, stable IDs, item editing, search, aging, validation, and dashboard upgrades.
+## v0.5 — Analytics
+Category ROI, marketplace and sourcing performance, aging, velocity, business health.
 
-## Sprint 3 — Transactions
-Sales workflow, expenses, mileage, realized profit, shipping charged versus actual,
-marketplace fees, payment fees, and packaging costs.
-
-## Sprint 4 — CRA Tax Centre
-Profit and loss, cost of goods sold, inventory valuation, expense summaries,
-mileage reporting, GST/HST support, and accountant exports.
-
-## Sprint 5 — Analytics
-Category ROI, sourcing-location performance, marketplace performance, aging,
-inventory velocity, and Business Health Score.
-
-## Sprint 6 — Automation
-PDF reports, backups, restore tools, scheduled summaries, and year-end packaging.
+## v1.0
+Safe migrations, backup/restore, documentation, release validation.

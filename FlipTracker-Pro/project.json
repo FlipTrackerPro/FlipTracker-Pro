@@ -1,9 +1,9 @@
 {
-  "project": "FlipTracker Pro",
-  "current_version": "0.3",
+  "name": "FlipTracker Pro",
+  "version": "0.3.0",
+  "schemaVersion": 3,
   "platform": "Google Sheets + Google Apps Script",
-  "current_sprint": 3,
-  "entry_point": "initializeFlipTrackerProSprint3",
-  "distribution": "apps-script/Sprint3/dist/FlipTrackerPro_Sprint3.gs",
-  "source_directory": "apps-script/Sprint3/src"
+  "installFunction": "installFlipTrackerPro",
+  "upgradeFunction": "upgradeFlipTrackerPro",
+  "releaseFile": "releases/v0.3.0/FlipTrackerPro-v0.3.0.gs"
 }
