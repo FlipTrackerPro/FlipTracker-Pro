@@ -1,9 +1,0 @@
-{
-  "project": "FlipTracker Pro",
-  "current_version": "0.2",
-  "platform": "Google Sheets + Google Apps Script",
-  "current_sprint": 2,
-  "entry_point": "initializeFlipTrackerProSprint2",
-  "distribution": "apps-script/Sprint2/dist/FlipTrackerPro_Sprint2.gs",
-  "source_directory": "apps-script/Sprint2/src"
-}
