@@ -1,6 +1,5 @@
 function buildAdminSprint3_() {
   const s = sheet3_(FTP3.SHEETS.ADMIN);
-  s.clear();
   const lists = {
     Categories:['Electronics','Tools','Collectibles','Clothing','Furniture','Automotive','Household','Other'],
     PurchaseLocations:['Garage Sale','Thrift Store','Value Village','Facebook Marketplace','Auction','Retail Clearance','Other'],
@@ -12,10 +11,20 @@ function buildAdminSprint3_() {
     PaymentMethods:['Cash','Credit Card','Debit','PayPal','Bank Transfer','Other'],
     PackagingTypes:['Box','Bubble Wrap','Mailer','Tape','Label','Packing Paper','Other']
   };
+  const existingLists = {};
+  if (s.getLastColumn() > 0 && s.getLastRow() > 1) {
+    const oldHeaders = s.getRange(1,1,1,s.getLastColumn()).getDisplayValues()[0];
+    oldHeaders.forEach((name,index) => {
+      if (!name) return;
+      existingLists[name] = s.getRange(2,index+1,s.getLastRow()-1,1).getDisplayValues().flat().filter(Boolean);
+    });
+  }
+  s.clear();
   let col = 1;
   Object.keys(lists).forEach(name => {
     s.getRange(1,col).setValue(name);
-    const values = lists[name].map(v => [v]);
+    const merged = lists[name].concat(existingLists[name] || []).filter((v,i,a) => a.indexOf(v) === i);
+    const values = merged.map(v => [v]);
     s.getRange(2,col,values.length,1).setValues(values);
     const rangeName = 'FTP3_' + name;
     SpreadsheetApp.getActive().getNamedRanges()

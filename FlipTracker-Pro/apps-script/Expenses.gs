@@ -38,6 +38,7 @@ function showRecordExpenseForm() {
 }
 
 function saveExpense3_(form) {
+  if (!form.date || !form.category || !form.description) throw new Error('Date, category, and description are required.');
   const subtotal = num3_(form.subtotal);
   const tax = num3_(form.taxPaid);
   const total = subtotal + tax;

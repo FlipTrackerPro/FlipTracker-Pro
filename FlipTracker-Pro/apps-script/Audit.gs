@@ -1,0 +1,40 @@
+function runFlipTrackerCalculationAudit() {
+  const issues=[];
+  const add=(severity,area,row,message)=>issues.push([severity,area,row||'',message]);
+  const inv=sheet3_(FTP3.SHEETS.INVENTORY), sales=sheet3_(FTP3.SHEETS.SALES);
+  const exp=sheet3_(FTP3.SHEETS.EXPENSES), mil=sheet3_(FTP3.SHEETS.MILEAGE), pkg=sheet3_(FTP3.SHEETS.PACKAGING);
+  const invRows=inv.getLastRow()>1?inv.getRange(2,1,inv.getLastRow()-1,FTP3.INVENTORY_HEADERS.length).getValues():[];
+  invRows.forEach((r,i)=>{
+    if(!r[0])return; const expected=num3_(r[10])*Math.max(1,num3_(r[9]))+num3_(r[11])+num3_(r[12]);
+    if(Math.abs(num3_(r[13])-expected)>0.01)add('HIGH','Inventory',i+2,'Total Cost does not equal Purchase Price × Quantity + Tax + Acquisition Shipping.');
+  });
+  const saleRows=sales.getLastRow()>1?sales.getRange(2,1,sales.getLastRow()-1,FTP3.SALES_HEADERS.length).getValues():[];
+  saleRows.forEach((r,i)=>{if(!r[0])return;
+    const gross=num3_(r[4])+num3_(r[5]); const costs=num3_(r[6])+num3_(r[7])+num3_(r[8])+num3_(r[9])+num3_(r[10]);
+    const net=gross-costs, profit=net-num3_(r[12]);
+    if(Math.abs(num3_(r[13])-gross)>0.01)add('CRITICAL','Sales',i+2,'Gross Revenue is inconsistent.');
+    if(Math.abs(num3_(r[14])-costs)>0.01)add('CRITICAL','Sales',i+2,'Total Selling Costs incorrectly includes or omits a cost.');
+    if(Math.abs(num3_(r[15])-net)>0.01)add('CRITICAL','Sales',i+2,'Net Proceeds is inconsistent.');
+    if(Math.abs(num3_(r[16])-profit)>0.01)add('CRITICAL','Sales',i+2,'Realized Profit is inconsistent.');
+  });
+  const expRows=exp.getLastRow()>1?exp.getRange(2,1,exp.getLastRow()-1,FTP3.EXPENSE_HEADERS.length).getValues():[];
+  expRows.forEach((r,i)=>{if(!r[0])return;const total=num3_(r[5])+num3_(r[6]);const ded=total*Math.min(1,Math.max(0,num3_(r[8])));
+    if(Math.abs(num3_(r[7])-total)>0.01)add('HIGH','Expenses',i+2,'Total does not equal Subtotal + GST/HST Paid.');
+    if(Math.abs(num3_(r[9])-ded)>0.01)add('HIGH','Expenses',i+2,'Deductible Amount does not equal Total × Business Use %.');
+  });
+  const milRows=mil.getLastRow()>1?mil.getRange(2,1,mil.getLastRow()-1,FTP3.MILEAGE_HEADERS.length).getValues():[];
+  milRows.forEach((r,i)=>{if(!r[0])return;const total=Math.max(0,num3_(r[6])-num3_(r[5]));
+    if(Math.abs(num3_(r[7])-total)>0.01)add('HIGH','Mileage',i+2,'Total Kilometres is inconsistent with odometers.');
+    if(num3_(r[8])>total+0.001)add('HIGH','Mileage',i+2,'Business Kilometres exceeds Total Kilometres.');
+    if(Math.abs(num3_(r[10])-num3_(r[8])*num3_(r[9]))>0.01)add('HIGH','Mileage',i+2,'Claim Amount does not equal Business Kilometres × CRA Rate.');
+  });
+  const pkgRows=pkg.getLastRow()>1?pkg.getRange(2,1,pkg.getLastRow()-1,FTP3.PACKAGING_HEADERS.length).getValues():[];
+  pkgRows.forEach((r,i)=>{if(!r[0])return;const cpu=num3_(r[4])?num3_(r[5])/num3_(r[4]):0;
+    if(Math.abs(num3_(r[6])-cpu)>0.001)add('MEDIUM','Packaging',i+2,'Cost Per Unit is inconsistent.');
+  });
+  const q=sheet3_('Calculation Audit');q.clear();q.getRange(1,1,1,4).setValues([['Severity','Area','Row','Finding']]);header3_(q.getRange(1,1,1,4));
+  if(issues.length)q.getRange(2,1,issues.length,4).setValues(issues);else q.getRange(2,1).setValue('PASS — no row-level calculation inconsistencies detected.');
+  q.setFrozenRows(1);q.setColumnWidth(1,100);q.setColumnWidth(2,120);q.setColumnWidth(3,70);q.setColumnWidth(4,520);q.getRange('A:D').setWrap(true);
+  SpreadsheetApp.getActive().setActiveSheet(q);SpreadsheetApp.getActive().toast(issues.length+' calculation issue(s) found.','FlipTracker Pro Audit',8);
+  return issues;
+}

@@ -65,10 +65,12 @@ function saveSale3_(form) {
   const taxCollected = num3_(form.taxCollected);
   const itemCost = num3_(inv[13]);
   const grossRevenue = salePrice + shippingCharged;
-  const sellingCosts = shippingActual + packaging + marketFees + paymentFees + promotion + taxCollected;
+  const sellingCosts = shippingActual + packaging + marketFees + paymentFees + promotion;
   const netProceeds = grossRevenue - sellingCosts;
   const realizedProfit = netProceeds - itemCost;
   const roi = itemCost ? realizedProfit / itemCost : '';
+  if (!form.saleDate) throw new Error('Sale date is required.');
+  if (salePrice < 0) throw new Error('Sale price cannot be negative.');
   const saleDate = date3_(form.saleDate);
   const purchaseDate = inv[1] instanceof Date ? inv[1] : date3_(inv[1]);
   const days = purchaseDate ? Math.max(0,Math.floor((saleDate-purchaseDate)/86400000)) : '';

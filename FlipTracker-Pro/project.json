@@ -1,9 +1,9 @@
 {
   "name": "FlipTracker Pro",
-  "version": "0.4.0",
-  "schemaVersion": 4,
+  "version": "0.4.1",
+  "schemaVersion": 4.1,
   "platform": "Google Sheets + Google Apps Script",
   "installFunction": "installFlipTrackerPro",
   "upgradeFunction": "upgradeFlipTrackerPro",
-  "releaseFile": "releases/v0.4.0/FlipTrackerPro-v0.4.0.gs"
+  "releaseFile": "releases/v0.4.1/FlipTrackerPro-v0.4.1.gs"
 }

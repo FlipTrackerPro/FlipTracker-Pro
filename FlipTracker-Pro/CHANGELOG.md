@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.4.1 — Calculation Audit Fixes
+- Corrected GST/HST treatment in realized profit.
+- Rebuilt Tax Centre calculations using reliable date-based Apps Script logic.
+- Corrected historical ending inventory using actual sale dates.
+- Added registration/method-aware ITC calculations.
+- Corrected quantity, mileage, packaging, and dashboard calculations.
+- Added an in-workbook Calculation Audit command and detailed audit report.
+
+# Changelog
+
 ## v0.4.0
 - Added CRA Tax Centre with selectable tax year.
 - Added gross revenue, COGS, gross profit, expenses, and net-income estimates.

@@ -8,7 +8,7 @@ function buildDashboardSprint3_() {
     .setHorizontalAlignment('center').setVerticalAlignment('middle');
 
   const cards = [
-    ['A4:B6','Inventory Cost','SUM(Inventory!N2:N)','$#,##0.00'],
+    ['A4:B6','Current Inventory Cost','SUMIFS(Inventory!N2:N,Inventory!S2:S,"<>Sold",Inventory!S2:S,"<>Archived")','$#,##0.00'],
     ['C4:D6','Gross Sales','SUM(Sales!N2:N)','$#,##0.00'],
     ['E4:F6','Realized Profit','SUM(Sales!Q2:Q)','$#,##0.00'],
     ['G4:H6','Average ROI','IFERROR(AVERAGE(FILTER(Sales!R2:R,Sales!A2:A<>"")),0)','0.0%'],
@@ -39,7 +39,7 @@ function buildDashboardSprint3_() {
   ).setBackground(FTP3.COLORS.GRAY).setWrap(true).setVerticalAlignment('middle');
 
   s.getRange('A20:D20').merge().setValue('Profit after operating expenses');
-  s.getRange('E20:H20').merge().setFormula('=SUM(Sales!Q2:Q)-SUM(Expenses!J2:J)-SUM(Mileage!K2:K)');
+  s.getRange('E20:H20').merge().setFormula('=SUM(Sales!Q2:Q)-SUM(Expenses!J2:J)-IF(IFERROR(VLOOKUP("Include Mileage Estimate in Expenses",Settings!A:B,2,FALSE),"No")="Yes",SUM(Mileage!K2:K),0)');
   header3_(s.getRange('A20:D20'));
   s.getRange('E20:H20').setBackground(FTP3.COLORS.LIGHT_GREEN)
     .setFontWeight('bold').setFontSize(16).setNumberFormat('$#,##0.00')

@@ -33,11 +33,14 @@ function showRecordMileageForm() {
 }
 
 function saveMileage3_(form) {
+  if (!form.date || !form.purpose) throw new Error('Date and business purpose are required.');
   const start = num3_(form.odoStart);
   const end = num3_(form.odoEnd);
   const total = Math.max(0,end-start);
-  const business = num3_(form.businessKm) || total;
-  const rate = num3_(form.craRate);
+  const requestedBusiness = form.businessKm === '' || form.businessKm == null ? total : num3_(form.businessKm);
+  const business = Math.min(total,Math.max(0,requestedBusiness));
+  const configuredRate = num3_(getSettingV04_('CRA Mileage Rate',0));
+  const rate = form.craRate === '' || form.craRate == null ? configuredRate : num3_(form.craRate);
   const claim = business * rate;
   const values = [
     nextId3_(FTP3.SHEETS.MILEAGE,1,'TRP'),date3_(form.date),form.start||'',

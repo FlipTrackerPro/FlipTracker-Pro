@@ -4,7 +4,7 @@ FlipTracker Pro is a Google Sheets and Apps Script business-management system fo
 
 ## Current version
 
-**v0.4.0 — CRA Tax Centre**
+**v0.4.1 — Audited CRA Tax Centre**
 
 The current source is in `apps-script/`. Install with `installFlipTrackerPro()` or upgrade an existing workbook with `upgradeFlipTrackerPro()`.
 

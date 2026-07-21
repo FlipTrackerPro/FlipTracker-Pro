@@ -17,6 +17,7 @@ function onOpen() {
     .addItem('Open CRA Tax Centre','goToTaxCentreV04')
     .addItem('Refresh CRA Tax Centre','refreshTaxCentreV04')
     .addItem('Build Accountant Export','buildAccountantExportV04_')
+    .addItem('Run Calculation Audit','runFlipTrackerCalculationAudit')
     .addItem('Go to Dashboard','goToDashboardSprint3')
     .addToUi();
 }

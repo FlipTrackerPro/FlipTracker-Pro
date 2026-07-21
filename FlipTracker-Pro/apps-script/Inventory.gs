@@ -51,7 +51,8 @@ function saveInventoryItem(form) {
   const tax = num3_(form.taxPaid);
   const shipping = num3_(form.acquisitionShipping);
   const expected = num3_(form.expectedSalePrice);
-  const total = purchasePrice + tax + shipping;
+  const quantity = Math.max(1,Math.floor(num3_(form.quantity) || 1));
+  const total = purchasePrice * quantity + tax + shipping;
   const profit = expected ? expected-total : '';
   const roi = total && profit !== '' ? profit/total : '';
   const purchaseDate = date3_(form.purchaseDate);
@@ -62,7 +63,7 @@ function saveInventoryItem(form) {
     editing ? old[0] : nextId3_(FTP3.SHEETS.INVENTORY,1,'ITM'),
     purchaseDate,form.title,form.sku||'',form.barcode||'',form.category||'',
     form.purchaseLocation||'',form.storageLocation||'',form.condition||'',
-    num3_(form.quantity)||1,purchasePrice,tax,shipping,total,expected,
+    quantity,purchasePrice,tax,shipping,total,expected,
     num3_(form.listedPrice),form.marketplace||'',old[17]||'',
     form.status||'Purchased',days,profit,roi,form.receiptLink||'',
     form.photoLink||'',form.notes||'',editing?(old[25]||now):now,now

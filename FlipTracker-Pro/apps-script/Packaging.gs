@@ -42,7 +42,7 @@ function savePackaging3_(form) {
   const values = [
     nextId3_(FTP3.SHEETS.PACKAGING,1,'PKG'),form.type||'',form.description||'',
     form.size||'',units,purchaseCost,purchaseCost/units,
-    num3_(form.quantityOnHand),num3_(form.reorderLevel),form.supplier||'',
+    (form.quantityOnHand === '' || form.quantityOnHand == null ? units : num3_(form.quantityOnHand)),num3_(form.reorderLevel),form.supplier||'',
     form.productLink||'',form.notes||'',new Date()
   ];
   const s = sheet3_(FTP3.SHEETS.PACKAGING);
