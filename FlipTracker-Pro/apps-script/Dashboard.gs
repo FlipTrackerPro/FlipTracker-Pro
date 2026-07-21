@@ -2,7 +2,7 @@ function buildDashboardSprint3_() {
   const s = sheet3_(FTP3.SHEETS.DASHBOARD);
   s.clear();
   s.setHiddenGridlines(true);
-  s.getRange('A1:H2').merge().setValue('FlipTracker Pro — Sprint 3')
+  s.getRange('A1:H2').merge().setValue('FlipTracker Pro — v0.4')
     .setBackground(FTP3.COLORS.NAVY).setFontColor(FTP3.COLORS.WHITE)
     .setFontSize(22).setFontWeight('bold')
     .setHorizontalAlignment('center').setVerticalAlignment('middle');
@@ -29,13 +29,13 @@ function buildDashboardSprint3_() {
         SpreadsheetApp.BorderStyle.SOLID_MEDIUM);
   });
 
-  s.getRange('A13:H13').merge().setValue('Sprint 3 Transaction Workflow');
+  s.getRange('A13:H13').merge().setValue('v0.4 Transaction and Tax Workflow');
   header3_(s.getRange('A13:H13'));
   s.getRange('A14:H18').merge().setValue(
     'Record a sale from the FlipTracker Pro menu. Sprint 3 automatically retrieves ' +
     'the item cost, calculates gross revenue, total selling costs, net proceeds, ' +
     'realized profit, ROI, and days to sell, then marks the inventory item Sold. ' +
-    'Expenses, mileage, and packaging supplies are now tracked in dedicated sheets.'
+    'Expenses, mileage, packaging supplies, and tax-year estimates are tracked in dedicated sheets. Open the CRA Tax Centre from the menu for COGS, inventory, GST/HST, and accountant summaries.'
   ).setBackground(FTP3.COLORS.GRAY).setWrap(true).setVerticalAlignment('middle');
 
   s.getRange('A20:D20').merge().setValue('Profit after operating expenses');

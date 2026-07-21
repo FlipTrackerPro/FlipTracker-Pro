@@ -1,7 +1,13 @@
 # Changelog
 
+## v0.4.0
+- Added CRA Tax Centre with selectable tax year.
+- Added gross revenue, COGS, gross profit, expenses, and net-income estimates.
+- Added GST/HST regular-method estimate and potential ITC summaries.
+- Added year-end inventory count and value.
+- Added accountant-ready export sheet.
+- Added schema 4 migration that preserves existing Settings values.
+- Added official CRA reference links in the Tax Centre.
+
 ## v0.3.0
-- Added application-oriented repository structure.
-- Added installer and schema migration entry points.
-- Added Apps Script manifest and release package.
-- Archived Sprint 1–3 snapshots.
+- Added sales, expenses, mileage, packaging, dashboard, and structured repository layout.

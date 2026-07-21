@@ -1,11 +1,12 @@
-# Manual Test Checklist
+# Manual Test Checklist — v0.4
 
-- [ ] New workbook installs
-- [ ] Existing inventory survives upgrade
-- [ ] Add/edit/find inventory
-- [ ] Record sale and mark item Sold
-- [ ] Verify realized profit
-- [ ] Record expense and mileage
-- [ ] Add packaging supply
-- [ ] Dashboard refreshes
-- [ ] Version reports schema 3
+- [ ] Upgrade preserves Inventory, Sales, Expenses, Mileage, and Packaging rows
+- [ ] Existing Settings values remain unchanged
+- [ ] Tax Centre uses Settings tax year
+- [ ] Gross revenue matches Sales gross revenue for selected year
+- [ ] COGS matches sold-item cost for selected year
+- [ ] Expense category summary populates
+- [ ] GST/HST collected and potential ITCs populate
+- [ ] Ending inventory excludes sold items
+- [ ] Accountant Export refreshes
+- [ ] Version reports schema 4 and v0.4.0

@@ -1,6 +1,7 @@
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('FlipTracker Pro')
-    .addItem('Install / Repair Sprint 3','initializeFlipTrackerProSprint3')
+    .addItem('Install / Repair v0.4','installFlipTrackerPro')
+    .addItem('Upgrade Existing Workbook','upgradeFlipTrackerPro')
     .addSeparator()
     .addItem('Add Inventory Item','showAddItemForm')
     .addItem('Edit Selected Inventory Item','showEditSelectedItemForm')
@@ -13,19 +14,11 @@ function onOpen() {
     .addItem('Add Packaging Supply','showPackagingForm')
     .addSeparator()
     .addItem('Refresh Dashboard','refreshDashboardSprint3')
+    .addItem('Open CRA Tax Centre','goToTaxCentreV04')
+    .addItem('Refresh CRA Tax Centre','refreshTaxCentreV04')
+    .addItem('Build Accountant Export','buildAccountantExportV04_')
     .addItem('Go to Dashboard','goToDashboardSprint3')
     .addToUi();
 }
 
-function initializeFlipTrackerProSprint3() {
-  buildAdminSprint3_();
-  buildSettingsSprint3_();
-  buildInventorySprint3_();
-  buildSalesSprint3_();
-  buildExpensesSprint3_();
-  buildMileageSprint3_();
-  buildPackagingSprint3_();
-  buildDashboardSprint3_();
-  goToDashboardSprint3();
-  SpreadsheetApp.getActive().toast('Sprint 3 transaction engine is ready.','FlipTracker Pro',6);
-}
+function initializeFlipTrackerProSprint3() { installFlipTrackerPro(); }

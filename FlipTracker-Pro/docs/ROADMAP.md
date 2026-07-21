@@ -1,10 +1,20 @@
 # Roadmap
 
-## v0.4 — CRA Tax Centre
-Profit and loss, COGS, inventory valuation, GST/HST, mileage summaries, accountant export.
+## v0.4 — CRA Tax Centre — Complete
+- Tax-year profit and loss
+- Specific-item cost of goods sold
+- Ending inventory valuation
+- GST/HST collected and potential ITCs
+- Expense-category summary
+- Accountant export
 
 ## v0.5 — Analytics
-Category ROI, marketplace and sourcing performance, aging, velocity, business health.
+- Category and marketplace ROI
+- Sourcing-location performance
+- Inventory aging and velocity
+- Monthly trends and Business Health Score
 
-## v1.0
-Safe migrations, backup/restore, documentation, release validation.
+## v1.0 — Production Release
+- Backup and restore
+- Automated release validation
+- Complete user guide
