@@ -1,24 +1,12 @@
-# FlipTracker Pro
+# FlipTracker Pro v0.4.3 — Dynamic Packaging Dropdowns
 
-FlipTracker Pro is a Google Sheets and Apps Script business-management system for resellers.
+This release connects the Sales sheet packaging columns directly to active supplies on the Packaging sheet.
 
-## Current version
+## Highlights
+- Category-filtered dropdowns for Box, Bubble Wrap, Mailer, Tape, and Other Packaging
+- Automatic refresh when a packaging item is added, renamed, recategorized, or activated/deactivated
+- Friendly dropdown labels backed by permanent Packaging IDs
+- SKU / Barcode field on Packaging
+- Existing stock validation, cost calculation, and inventory deduction retained
 
-**v0.4.2 — Packaging Integration**
-
-The current source is in `apps-script/`. Install with `installFlipTrackerPro()` or upgrade an existing workbook with `upgradeFlipTrackerPro()`.
-
-## v0.4 highlights
-
-- Tax-year income and expense summary
-- Specific-item cost of goods sold estimate
-- Opening and ending inventory values
-- GST/HST collected and potential ITC summaries
-- Expense category summary
-- Accountant Export sheet
-- Schema 4 data-preserving upgrade
-
-The tax outputs are bookkeeping estimates and are not a substitute for professional tax advice.
-
-## Packaging integration
-Sales now select boxes, bubble wrap, mailers, tape, and other supplies from Packaging inventory. Costs and stock usage are calculated automatically.
+Run `upgradeFlipTrackerPro()` in an existing workbook.

@@ -3,7 +3,7 @@ function buildPackagingSprint3_() {
     'Category':['Type'], 'Item Name':['Description'], 'Unit of Measure':[],
     'Units Purchased':[], 'Purchase Cost':[], 'Cost Per Unit':[],
     'Quantity On Hand':[], 'Reorder Level':[], 'Supplier':[],
-    'Product Link':[], 'Notes':[], 'Updated At':[]
+    'SKU / Barcode':['Supplier SKU'], 'Product Link':[], 'Notes':[], 'Updated At':[]
   };
   migrateSheetHeaders3_(FTP3.SHEETS.PACKAGING,FTP3.PACKAGING_HEADERS,aliases);
   const s=sheet3_(FTP3.SHEETS.PACKAGING);
@@ -34,6 +34,7 @@ function buildPackagingSprint3_() {
   s.getRange(1,1,Math.max(2,s.getLastRow()),FTP3.PACKAGING_HEADERS.length).createFilter();
   s.autoResizeColumns(1,FTP3.PACKAGING_HEADERS.length);
   [3,13,15].forEach(c=>s.setColumnWidth(c,c===15?240:180));
+  if(SpreadsheetApp.getActive().getSheetByName(FTP3.SHEETS.SALES))refreshPackagingDropdowns3_();
 }
 
 function showPackagingForm() {
@@ -50,7 +51,7 @@ function showPackagingForm() {
   <div><label>Purchase cost</label><input type="number" step="0.01" min="0" name="purchaseCost" required></div>
   <div><label>Quantity on hand</label><input type="number" step="0.001" min="0" name="quantityOnHand"></div>
   <div><label>Reorder level</label><input type="number" step="0.001" min="0" name="reorderLevel"></div>
-  <div><label>Supplier</label><input name="supplier"></div><div><label>Supplier SKU</label><input name="supplierSku"></div>
+  <div><label>Supplier</label><input name="supplier"></div><div><label>SKU / Barcode</label><input name="supplierSku"></div>
   <div><label>Product link</label><input type="url" name="productLink"></div><div><label>Active</label><select name="active"><option>Yes</option><option>No</option></select></div>
   </div><label>Notes</label><textarea name="notes" rows="3"></textarea>
   <button type="submit">Add Supply</button></form><script>
@@ -66,7 +67,7 @@ function savePackaging3_(form) {
   if(purchaseCost<0)throw new Error('Purchase cost cannot be negative.');
   const values=[nextId3_(FTP3.SHEETS.PACKAGING,1,'PKG'),form.category||'',form.itemName||'',form.size||'',form.unitOfMeasure||'Each',units,purchaseCost,purchaseCost/units,
     form.quantityOnHand===''||form.quantityOnHand==null?units:num3_(form.quantityOnHand),num3_(form.reorderLevel),form.supplier||'',form.supplierSku||'',form.productLink||'',form.active||'Yes',form.notes||'',new Date()];
-  const s=sheet3_(FTP3.SHEETS.PACKAGING);s.getRange(Math.max(s.getLastRow()+1,2),1,1,values.length).setValues([values]);refreshDashboardSprint3();
+  const s=sheet3_(FTP3.SHEETS.PACKAGING);s.getRange(Math.max(s.getLastRow()+1,2),1,1,values.length).setValues([values]);refreshPackagingDropdowns3_();refreshDashboardSprint3();
 }
 
 function packagingChoices3_() {
@@ -78,7 +79,7 @@ function packagingChoices3_() {
 }
 
 function packagingItemById3_(id) {
-  if(!id)return null; const s=sheet3_(FTP3.SHEETS.PACKAGING);if(s.getLastRow()<2)return null;
+  if(!id)return null; id=packagingIdFromSelection3_(id); const s=sheet3_(FTP3.SHEETS.PACKAGING);if(s.getLastRow()<2)return null;
   const ids=s.getRange(2,1,s.getLastRow()-1,1).getDisplayValues().flat();const index=ids.findIndex(x=>x===id);
   if(index<0)return null;const row=index+2;return{row:row,values:s.getRange(row,1,1,FTP3.PACKAGING_HEADERS.length).getValues()[0]};
 }
@@ -86,7 +87,7 @@ function packagingItemById3_(id) {
 function calculatePackagingUsage3_(form) {
   const specs=[['boxId','boxQty','Box'],['bubbleId','bubbleQty','Bubble Wrap'],['mailerId','mailerQty','Mailer'],['tapeId','tapeQty','Tape'],['otherPackagingId','otherPackagingQty','Other']];
   const usage=[];let total=0;
-  specs.forEach(([idKey,qtyKey,label])=>{const id=String(form[idKey]||'').trim();const qty=num3_(form[qtyKey]);if(!id&&qty>0)throw new Error(label+' quantity was entered without selecting an item.');if(!id)return;if(qty<=0)throw new Error(label+' quantity must be greater than zero.');const item=packagingItemById3_(id);if(!item)throw new Error(label+' packaging item was not found: '+id);const available=num3_(item.values[8]);if(qty>available+0.000001)throw new Error(label+' quantity exceeds stock. Available: '+available+' '+String(item.values[4]||'units'));const cost=num3_(item.values[7])*qty;usage.push({id:id,qty:qty,row:item.row,cost:cost});total+=cost;});
+  specs.forEach(([idKey,qtyKey,label])=>{const selection=String(form[idKey]||'').trim();const id=packagingIdFromSelection3_(selection);const qty=num3_(form[qtyKey]);if(!id&&qty>0)throw new Error(label+' quantity was entered without selecting an item.');if(!id)return;if(qty<=0)throw new Error(label+' quantity must be greater than zero.');const item=packagingItemById3_(id);if(!item)throw new Error(label+' packaging item was not found: '+id);const available=num3_(item.values[8]);if(qty>available+0.000001)throw new Error(label+' quantity exceeds stock. Available: '+available+' '+String(item.values[4]||'units'));const cost=num3_(item.values[7])*qty;usage.push({id:id,qty:qty,row:item.row,cost:cost});total+=cost;});
   return{usage:usage,total:Math.round(total*100)/100};
 }
 
@@ -95,3 +96,66 @@ function deductPackagingUsage3_(usage) {
 }
 
 function goToPackagingInventory3_(){SpreadsheetApp.getActive().setActiveSheet(sheet3_(FTP3.SHEETS.PACKAGING));}
+
+
+function packagingIdFromSelection3_(selection) {
+  const text=String(selection||'').trim();
+  if(!text)return '';
+  const match=text.match(/^(PKG-\d+)/i);
+  return match?match[1].toUpperCase():text;
+}
+
+function packagingListLabel3_(row) {
+  return String(row[0])+' — '+String(row[2]||row[1]||'Packaging')+(row[3]?' ('+row[3]+')':'');
+}
+
+function packagingCategoryKey3_(category) {
+  const c=String(category||'').toLowerCase();
+  if(c.indexOf('box')>=0)return 'Box';
+  if(c.indexOf('bubble')>=0)return 'Bubble Wrap';
+  if(c.indexOf('mailer')>=0||c.indexOf('envelope')>=0)return 'Mailer';
+  if(c.indexOf('tape')>=0)return 'Tape';
+  return 'Other';
+}
+
+function refreshPackagingDropdowns3_() {
+  const ss=SpreadsheetApp.getActive();
+  const packaging=ss.getSheetByName(FTP3.SHEETS.PACKAGING);
+  const sales=ss.getSheetByName(FTP3.SHEETS.SALES);
+  if(!packaging||!sales)return;
+  let lists=ss.getSheetByName(FTP3.SHEETS.PACKAGING_LISTS);
+  if(!lists)lists=ss.insertSheet(FTP3.SHEETS.PACKAGING_LISTS);
+  lists.clear();ensureSize3_(lists,Math.max(300,lists.getMaxRows()),5);
+  const headers=['Boxes','Bubble Wrap','Mailers','Tape','Other Packaging'];
+  lists.getRange(1,1,1,5).setValues([headers]);header3_(lists.getRange(1,1,1,5));
+  const buckets={'Box':[],'Bubble Wrap':[],'Mailer':[],'Tape':[],'Other':[]};
+  if(packaging.getLastRow()>1){
+    packaging.getRange(2,1,packaging.getLastRow()-1,FTP3.PACKAGING_HEADERS.length).getValues().forEach(r=>{
+      if(!r[0]||String(r[13]||'Yes').toLowerCase()==='no')return;
+      buckets[packagingCategoryKey3_(r[1])].push(packagingListLabel3_(r));
+    });
+  }
+  const ordered=[buckets.Box,buckets['Bubble Wrap'],buckets.Mailer,buckets.Tape,buckets.Other];
+  ordered.forEach((values,i)=>{values.sort();if(values.length)lists.getRange(2,i+1,values.length,1).setValues(values.map(v=>[v]));});
+  const salesColumns=[24,26,28,30,32];
+  salesColumns.forEach((col,i)=>{
+    const count=ordered[i].length;
+    const target=sales.getRange(2,col,FTP3.ROWS,1);
+    target.clearDataValidations();
+    if(count){
+      const source=lists.getRange(2,i+1,count,1);
+      const rule=SpreadsheetApp.newDataValidation().requireValueInRange(source,true).setAllowInvalid(false).setHelpText('Choose an active packaging item from the Packaging sheet.').build();
+      target.setDataValidation(rule);
+    }
+  });
+  lists.hideSheet();
+  ss.toast('Packaging dropdowns refreshed.','FlipTracker Pro',4);
+}
+
+function onEdit(e) {
+  if(!e||!e.range)return;
+  const sheet=e.range.getSheet();
+  if(sheet.getName()!==FTP3.SHEETS.PACKAGING||e.range.getRow()===1)return;
+  const relevant=[1,2,3,4,14];
+  if(relevant.indexOf(e.range.getColumn())>=0)refreshPackagingDropdowns3_();
+}

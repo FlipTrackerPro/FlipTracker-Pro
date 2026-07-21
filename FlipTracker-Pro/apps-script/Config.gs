@@ -1,11 +1,11 @@
 const FTP3 = {
   APP_NAME: 'FlipTracker Pro',
-  VERSION: '0.4.2 Packaging Integration',
+  VERSION: '0.4.3 Dynamic Packaging Dropdowns',
   ROWS: 1000,
   SHEETS: {
     DASHBOARD:'Dashboard', INVENTORY:'Inventory', SALES:'Sales',
     EXPENSES:'Expenses', MILEAGE:'Mileage', PACKAGING:'Packaging',
-    ADMIN:'Admin', SETTINGS:'Settings', TAX_CENTRE:'Tax Centre', ACCOUNTANT_EXPORT:'Accountant Export'
+    ADMIN:'Admin', SETTINGS:'Settings', TAX_CENTRE:'Tax Centre', ACCOUNTANT_EXPORT:'Accountant Export', PACKAGING_LISTS:'Packaging Lists'
   },
   COLORS: {
     NAVY:'#1F4E78', BLUE:'#5B9BD5', LIGHT_BLUE:'#D9EAF7',
@@ -45,7 +45,7 @@ const FTP3 = {
   PACKAGING_HEADERS: [
     'Packaging ID','Category','Item Name','Size','Unit of Measure',
     'Units Purchased','Purchase Cost','Cost Per Unit','Quantity On Hand',
-    'Reorder Level','Supplier','Supplier SKU','Product Link','Active',
+    'Reorder Level','Supplier','SKU / Barcode','Product Link','Active',
     'Notes','Updated At'
   ]
 };

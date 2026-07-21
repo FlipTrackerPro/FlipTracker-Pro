@@ -1,6 +1,6 @@
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('FlipTracker Pro')
-    .addItem('Install / Repair v0.4.2','installFlipTrackerPro')
+    .addItem('Install / Repair v0.4.3','installFlipTrackerPro')
     .addItem('Upgrade Existing Workbook','upgradeFlipTrackerPro')
     .addSeparator()
     .addItem('Add Inventory Item','showAddItemForm')
@@ -13,6 +13,7 @@ function onOpen() {
     .addItem('Record Mileage','showRecordMileageForm')
     .addItem('Add Packaging Supply','showPackagingForm')
     .addItem('Go to Packaging Inventory','goToPackagingInventory3_')
+    .addItem('Refresh Packaging Dropdowns','refreshPackagingDropdowns3_')
     .addSeparator()
     .addItem('Refresh Dashboard','refreshDashboardSprint3')
     .addItem('Open CRA Tax Centre','goToTaxCentreV04')
