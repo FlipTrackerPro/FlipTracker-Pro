@@ -70,12 +70,12 @@ function saveInventoryItem(form) {
     'SKU':form.sku||'','Barcode':form.barcode||'','Quantity':quantity,
     'Purchase Date':purchaseDate,'Purchase Location':form.purchaseLocation||'',
     'Purchase Price':purchasePrice,'Tax Paid':tax,'Acquisition Shipping':shipping,
-    'Total Cost':total,'Storage Location':form.storageLocation||'',
-    'Receipt Link':form.receiptLink||'','Photo Link':form.photoLink||'','Notes':form.notes||'',
-    'Status':status,'Marketplace':form.marketplace||'','Listing Date':listingDate,
+    'Total Cost':total,'Status':status,'Marketplace':form.marketplace||'',
+    'Listing Date':listingDate,'Storage Location':form.storageLocation||'',
     'Listed Price':listed,'Expected Sale Price':expected,'Days in Inventory':days,
     'Projected Profit':profit,'Projected ROI %':roi,
-    'Created At':editing?(old['Created At']||now):now,'Updated At':now
+    'Created At':editing?(old['Created At']||now):now,'Updated At':now,
+    'Notes':form.notes||'','Photo Link':form.photoLink||'','Receipt Link':form.receiptLink||''
   };
   s.getRange(row,1,1,headers.length).setValues([headers.map(h=>record[h])]);
   recalculateInventoryRow3_(s,row);

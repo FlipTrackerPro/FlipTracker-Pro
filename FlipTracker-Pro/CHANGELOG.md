@@ -1,9 +1,10 @@
 # Changelog
 
-## v0.5.3 — Inventory Cost Recalculation Fix
+## v0.5.4 — Inventory Column Order Audit
 
-- Fixed malformed row-level Inventory formulas.
-- Replaced fragile formulas with header-based recalculation on edits and saves.
-- Total Cost now recalculates from Purchase Price × Quantity + Tax Paid + Acquisition Shipping.
-- Added Repair Inventory Calculations menu action.
-- Upgrade forcibly clears stale validation and recalculates all existing Inventory rows.
+- Moved Storage Location directly after Listing Date.
+- Moved Notes, Photo Link, and Receipt Link to the end of Inventory in that order.
+- Preserved existing Inventory data by migrating values by header name.
+- Re-ran Inventory calculation repair after migration.
+- Confirmed Total Cost, projected values, Sales item cost, Dashboard, Tax Centre, and Audit use header-name lookups.
+- Replaced an older Description migration that still relied on fixed Inventory column positions.

@@ -1,6 +1,21 @@
-# FlipTracker Pro v0.5.3
+# FlipTracker Pro v0.5.4
 
-Replace all Apps Script files and run `upgradeFlipTrackerPro()`. Reload the spreadsheet.
+## Updated Inventory order
 
-Total Cost is recalculated whenever Purchase Price, Quantity, Tax Paid, or Acquisition Shipping changes.
-You can also run **FlipTracker Pro → Repair Inventory Calculations**.
+Item ID, Description, Category, Condition, SKU, Barcode, Quantity,
+Purchase Date, Purchase Location, Purchase Price, Tax Paid,
+Acquisition Shipping, Total Cost, Status, Marketplace, Listing Date,
+Storage Location, Listed Price, Expected Sale Price, Days in Inventory,
+Projected Profit, Projected ROI %, Created At, Updated At, Notes,
+Photo Link, Receipt Link.
+
+## Formula logic
+
+Total Cost = Purchase Price × Quantity + Tax Paid + Acquisition Shipping.
+
+All active Inventory-dependent calculations use header-name mappings rather than fixed column numbers.
+
+## Upgrade
+
+Replace the Apps Script files, run `upgradeFlipTrackerPro()`, reload the spreadsheet,
+and run **FlipTracker Pro → Repair Inventory Calculations**.

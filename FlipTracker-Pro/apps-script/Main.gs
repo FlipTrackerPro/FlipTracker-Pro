@@ -6,9 +6,9 @@ function installFlipTrackerPro() {
   buildInventorySprint3_(); // Always repair validation and calculated columns.
   buildInventorySprint3_();
   repairInventoryCalculations3_();
-  p.setProperty('FTP_SCHEMA_VERSION','5.3'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
+  p.setProperty('FTP_SCHEMA_VERSION','5.4'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
   goToDashboardSprint3();
-  SpreadsheetApp.getActive().toast('FlipTracker Pro v0.5.3 is ready.','FlipTracker Pro',6);
+  SpreadsheetApp.getActive().toast('FlipTracker Pro v0.5.4 is ready.','FlipTracker Pro',6);
 }
 
 function upgradeFlipTrackerPro() {
@@ -31,10 +31,11 @@ function upgradeFlipTrackerPro() {
   if(current<5.1) migrateToSchema51_();
   if(current<5.2) migrateToSchema52_();
   if(current<5.3) migrateToSchema53_();
+  if(current<5.4) migrateToSchema54_();
   buildInventorySprint3_();
   repairInventoryCalculations3_();
-  p.setProperty('FTP_SCHEMA_VERSION','5.3'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
-  SpreadsheetApp.getActive().toast('FlipTracker Pro upgraded to schema 5.3.','FlipTracker Pro',6);
+  p.setProperty('FTP_SCHEMA_VERSION','5.4'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
+  SpreadsheetApp.getActive().toast('FlipTracker Pro upgraded to schema 5.4.','FlipTracker Pro',6);
 }
 function migrateToSchema1_(){buildAdminSprint3_();buildSettingsSprint3_();buildInventorySprint3_();}
 function migrateToSchema2_(){buildInventorySprint3_();}
@@ -58,8 +59,10 @@ function populateSalesDescriptions48_(){
   const inventory=sheet3_(FTP3.SHEETS.INVENTORY);
   const map={};
   if(inventory.getLastRow()>1){
-    inventory.getRange(2,1,inventory.getLastRow()-1,3).getDisplayValues()
-      .forEach(r=>{if(r[0])map[String(r[0])]=String(r[2]||'');});
+    const headers=inventory.getRange(1,1,1,inventory.getLastColumn()).getDisplayValues()[0];
+    const itemIdIndex=headerIndex3_(headers,'Item ID'), descriptionIndex=headerIndex3_(headers,'Description');
+    inventory.getRange(2,1,inventory.getLastRow()-1,inventory.getLastColumn()).getDisplayValues()
+      .forEach(r=>{if(r[itemIdIndex])map[String(r[itemIdIndex])]=String(r[descriptionIndex]||'');});
   }
   const ids=sales.getRange(2,2,sales.getLastRow()-1,1).getDisplayValues();
   const descriptions=ids.map(r=>[map[String(r[0])]||'']);
@@ -70,4 +73,5 @@ function migrateToSchema50_(){buildInventorySprint3_();buildSalesSprint3_();buil
 function migrateToSchema51_(){buildInventorySprint3_();buildSalesSprint3_();refreshPackagingDropdowns3_();}
 function migrateToSchema52_(){buildInventorySprint3_();buildSalesSprint3_();buildDashboardSprint3_();refreshPackagingDropdowns3_();}
 function migrateToSchema53_(){buildInventorySprint3_();repairInventoryCalculations3_();buildDashboardSprint3_();}
+function migrateToSchema54_(){buildInventorySprint3_();repairInventoryCalculations3_();buildSalesSprint3_();buildDashboardSprint3_();buildTaxCentreV04_();}
 function getFlipTrackerVersion(){const p=PropertiesService.getDocumentProperties();return{appVersion:p.getProperty('FTP_APP_VERSION')||FTP3.VERSION,schemaVersion:p.getProperty('FTP_SCHEMA_VERSION')||'unversioned'};}
