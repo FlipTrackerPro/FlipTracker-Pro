@@ -1,12 +1,10 @@
 # Changelog
 
-## v0.4.8 — Item ID and Description Alignment
+## v0.4.9 — Header-Based Sales Save
 
-- Renamed Inventory **Title** to **Description**.
-- Added **Description** as a separate Sales column immediately after Item ID.
-- Changed the Complete Sale form Inventory Item selector to display only Item ID.
-- Added a separate read-only Description field to the Complete Sale form.
-- Sale saving now writes Item ID and Description into matching Sales columns.
-- Existing Inventory Title data is migrated into Description.
-- Existing Sales descriptions are populated by matching Item ID to Inventory.
-- Updated Sales calculations, audits, tax reporting, dashboard formulas, packaging references, formats, and validations for the new column.
+- Replaced positional Sales writes with header-based record mapping.
+- Complete Sale now writes Item ID and Description to their exact named columns.
+- Added explicit checks for missing Sales columns and invalid sale dates.
+- Corrected packaging dropdown target columns after Description was added.
+- Added rollback if packaging or Inventory finalization fails.
+- Added server-side error logging and a success response containing the Sales row.

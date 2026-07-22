@@ -1,19 +1,5 @@
-# FlipTracker Pro v0.4.8
+# FlipTracker Pro v0.4.9
 
-## Corrected sale data model
+This release fixes Complete Sale records not appearing on the Sales sheet. The save routine now maps every value by the Sales header name rather than relying on fixed column positions.
 
-Inventory and Sales now use matching fields:
-
-- **Item ID**
-- **Description**
-
-On the Complete Sale form, the Item ID dropdown contains only Inventory Item IDs.
-The Description appears in its own read-only field and is copied from Inventory when
-the sale is saved.
-
-## Upgrade
-
-Replace the Apps Script files, run `upgradeFlipTrackerPro()`, and reload the spreadsheet.
-
-The upgrade preserves existing Inventory data by moving **Title** into **Description**.
-It also fills the new Sales Description column by matching existing Sales Item IDs to Inventory.
+Replace the Apps Script files, run `upgradeFlipTrackerPro()`, authorize if prompted, and reload the spreadsheet.

@@ -117,20 +117,78 @@ function marketplaceChoices3_() {
 }
 
 function saveSale3_(form) {
-  const lock=LockService.getDocumentLock();if(!lock.tryLock(5000))throw new Error('FlipTracker Pro is busy with another update. Please wait a few seconds and try again.');
+  const itemId=String(form&&form.itemId||'').trim();
+  if(!itemId)throw new Error('Item ID is missing from the Complete Sale form.');
+  const lock=LockService.getDocumentLock();
+  if(!lock.tryLock(5000))throw new Error('FlipTracker Pro is busy. Wait a few seconds and try again.');
   try{
-    const item=inventoryItemById3_(form.itemId);if(!item)throw new Error('The selected inventory item was not found.');const inv=item.values;if(saleExistsForInventory3_(form.itemId))throw new Error('A completed Sales record already exists for this inventory item.');
-    const pkg=calculatePackagingUsage3_(form);const salePrice=num3_(form.salePrice),shippingCharged=num3_(form.shippingCharged),shippingActual=num3_(form.shippingActual),marketFees=num3_(form.marketplaceFees),paymentFees=num3_(form.paymentFees),promotion=num3_(form.promotionExpense),taxCollected=num3_(form.taxCollected),itemCost=num3_(inv[13]);
-    if(!form.saleDate)throw new Error('Sale date is required.');if(salePrice<0)throw new Error('Sale price cannot be negative.');
-    const grossRevenue=salePrice+shippingCharged,sellingCosts=shippingActual+pkg.total+marketFees+paymentFees+promotion,netProceeds=grossRevenue-sellingCosts,realizedProfit=netProceeds-itemCost,roi=itemCost?realizedProfit/itemCost:'';
-    const saleDate=date3_(form.saleDate),purchaseDate=inv[1] instanceof Date?inv[1]:date3_(inv[1]),days=purchaseDate?Math.max(0,Math.floor((saleDate-purchaseDate)/86400000)):'';
-    const description=String(inv[2]||form.description||'');
-    const values=[nextId3_(FTP3.SHEETS.SALES,1,'SAL'),form.itemId,description,saleDate,form.marketplace||'',salePrice,shippingCharged,shippingActual,pkg.total,marketFees,paymentFees,promotion,taxCollected,itemCost,grossRevenue,sellingCosts,netProceeds,realizedProfit,roi,days,form.buyer||'',form.trackingNumber||'',form.notes||'',new Date(),packagingIdFromSelection3_(form.boxId),num3_(form.boxQty),packagingIdFromSelection3_(form.bubbleId),num3_(form.bubbleQty),packagingIdFromSelection3_(form.mailerId),num3_(form.mailerQty),packagingIdFromSelection3_(form.tapeId),num3_(form.tapeQty),packagingIdFromSelection3_(form.otherPackagingId),num3_(form.otherPackagingQty),'Yes'];
-    const sales=sheet3_(FTP3.SHEETS.SALES),row=Math.max(sales.getLastRow()+1,2);sales.getRange(row,1,1,values.length).setValues([values]);
-    try{deductPackagingUsage3_(pkg.usage);}catch(err){sales.deleteRow(row);throw err;}
-    const inventory=sheet3_(FTP3.SHEETS.INVENTORY);inventory.getRange(item.row,19).setValue('Sold').clearNote();inventory.getRange(item.row,27).setValue(new Date());PropertiesService.getDocumentProperties().deleteProperty('FTP_PREV_STATUS_'+form.itemId);SpreadsheetApp.flush();
-    return {ok:true,message:'Sale '+values[0]+' saved successfully.'};
-  }finally{lock.releaseLock();}
+    const item=inventoryItemById3_(itemId);
+    if(!item)throw new Error('Inventory Item ID '+itemId+' was not found.');
+    if(saleExistsForInventory3_(itemId))throw new Error('A Sales record already exists for '+itemId+'.');
+    const inv=item.values;
+    const saleDate=date3_(form.saleDate);
+    if(!saleDate || isNaN(saleDate.getTime()))throw new Error('Enter a valid sale date.');
+    const salePrice=num3_(form.salePrice);
+    if(salePrice<0)throw new Error('Sale price cannot be negative.');
+    const shippingCharged=num3_(form.shippingCharged);
+    const shippingActual=num3_(form.shippingActual);
+    const marketFees=num3_(form.marketplaceFees);
+    const paymentFees=num3_(form.paymentFees);
+    const promotion=num3_(form.promotionExpense);
+    const taxCollected=num3_(form.taxCollected);
+    const itemCost=num3_(inv[13]);
+    const pkg=calculatePackagingUsage3_(form);
+    const grossRevenue=salePrice+shippingCharged;
+    const sellingCosts=shippingActual+pkg.total+marketFees+paymentFees+promotion;
+    const netProceeds=grossRevenue-sellingCosts;
+    const realizedProfit=netProceeds-itemCost;
+    const roi=itemCost?realizedProfit/itemCost:'';
+    const purchaseDate=inv[1] instanceof Date?inv[1]:date3_(inv[1]);
+    const days=purchaseDate&&!isNaN(purchaseDate.getTime())?Math.max(0,Math.floor((saleDate-purchaseDate)/86400000)):'';
+    const saleId=nextId3_(FTP3.SHEETS.SALES,1,'SAL');
+    const record={
+      'Sale ID':saleId,'Item ID':itemId,'Description':String(inv[2]||''),
+      'Sale Date':saleDate,'Marketplace':String(form.marketplace||''),'Sale Price':salePrice,
+      'Shipping Charged':shippingCharged,'Shipping Actual':shippingActual,'Packaging Cost':pkg.total,
+      'Marketplace Fees':marketFees,'Payment Fees':paymentFees,'Promotion Expense':promotion,
+      'GST/HST Collected':taxCollected,'Item Cost':itemCost,'Gross Revenue':grossRevenue,
+      'Total Selling Costs':sellingCosts,'Net Proceeds':netProceeds,'Realized Profit':realizedProfit,
+      'Realized ROI %':roi,'Days to Sell':days,'Buyer':String(form.buyer||''),
+      'Tracking Number':String(form.trackingNumber||''),'Notes':String(form.notes||''),'Created At':new Date(),
+      'Box Used':packagingIdFromSelection3_(form.boxId),'Box Qty':num3_(form.boxQty),
+      'Bubble Wrap Used':packagingIdFromSelection3_(form.bubbleId),'Bubble Wrap Qty':num3_(form.bubbleQty),
+      'Mailer Used':packagingIdFromSelection3_(form.mailerId),'Mailer Qty':num3_(form.mailerQty),
+      'Tape Used':packagingIdFromSelection3_(form.tapeId),'Tape Qty':num3_(form.tapeQty),
+      'Other Packaging Used':packagingIdFromSelection3_(form.otherPackagingId),'Other Packaging Qty':num3_(form.otherPackagingQty),
+      'Packaging Verified':'Yes'
+    };
+    const sales=sheet3_(FTP3.SHEETS.SALES);
+    const headers=sales.getRange(1,1,1,sales.getLastColumn()).getDisplayValues()[0].map(h=>String(h).trim());
+    const missing=FTP3.SALES_HEADERS.filter(h=>headers.indexOf(h)<0);
+    if(missing.length)throw new Error('Sales sheet is missing required columns: '+missing.join(', ')+'. Run upgradeFlipTrackerPro() and try again.');
+    const row=Math.max(sales.getLastRow()+1,2);
+    const values=headers.map(h=>Object.prototype.hasOwnProperty.call(record,h)?record[h]:'');
+    sales.getRange(row,1,1,headers.length).setValues([values]);
+    SpreadsheetApp.flush();
+    try{
+      deductPackagingUsage3_(pkg.usage);
+      const inventory=sheet3_(FTP3.SHEETS.INVENTORY);
+      const invHeaders=headerMap3_(inventory);
+      inventory.getRange(item.row,invHeaders['Status']||19).setValue('Sold').clearNote();
+      inventory.getRange(item.row,invHeaders['Updated At']||27).setValue(new Date());
+      PropertiesService.getDocumentProperties().deleteProperty('FTP_PREV_STATUS_'+itemId);
+      SpreadsheetApp.flush();
+    }catch(postWriteError){
+      sales.deleteRow(row);
+      throw new Error('The sale was not completed and was rolled back: '+postWriteError.message);
+    }
+    return {ok:true,saleId:saleId,row:row,message:'Sale '+saleId+' recorded on the Sales sheet.'};
+  }catch(err){
+    console.error('saveSale3_ failed: '+(err&&err.stack?err.stack:err));
+    throw err;
+  }finally{
+    lock.releaseLock();
+  }
 }
 
 function saleExistsForInventory3_(itemId){

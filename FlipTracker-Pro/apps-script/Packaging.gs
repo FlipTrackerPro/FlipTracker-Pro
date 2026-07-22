@@ -137,7 +137,7 @@ function refreshPackagingDropdowns3_() {
   }
   const ordered=[buckets.Box,buckets['Bubble Wrap'],buckets.Mailer,buckets.Tape,buckets.Other];
   ordered.forEach((values,i)=>{values.sort();if(values.length)lists.getRange(2,i+1,values.length,1).setValues(values.map(v=>[v]));});
-  const salesColumns=[24,26,28,30,32];
+  const salesColumns=[25,27,29,31,33];
   salesColumns.forEach((col,i)=>{
     const count=ordered[i].length;
     const target=sales.getRange(2,col,FTP3.ROWS,1);

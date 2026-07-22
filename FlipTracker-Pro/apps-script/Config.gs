@@ -1,6 +1,6 @@
 const FTP3 = {
   APP_NAME: 'FlipTracker Pro',
-  VERSION: '0.4.8',
+  VERSION: '0.4.9',
   ROWS: 1000,
   SHEETS: {
     DASHBOARD:'Dashboard', INVENTORY:'Inventory', SALES:'Sales',
