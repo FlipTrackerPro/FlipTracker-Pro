@@ -3,7 +3,7 @@ function installFlipTrackerPro() {
   buildSalesSprint3_(); buildExpensesSprint3_(); buildMileageSprint3_();
   buildPackagingSprint3_(); buildDashboardSprint3_(); buildTaxCentreV04_();
   const p=PropertiesService.getDocumentProperties();
-  p.setProperty('FTP_SCHEMA_VERSION','4.6'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
+  p.setProperty('FTP_SCHEMA_VERSION','4.7'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
   goToDashboardSprint3();
   SpreadsheetApp.getActive().toast('FlipTracker Pro v0.4 is ready.','FlipTracker Pro',6);
 }
@@ -21,7 +21,8 @@ function upgradeFlipTrackerPro() {
   if(current<4.4) migrateToSchema44_();
   if(current<4.5) migrateToSchema45_();
   if(current<4.6) migrateToSchema46_();
-  p.setProperty('FTP_SCHEMA_VERSION','4.6'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
+  if(current<4.7) migrateToSchema47_();
+  p.setProperty('FTP_SCHEMA_VERSION','4.7'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
   SpreadsheetApp.getActive().toast('FlipTracker Pro upgraded to schema 4.4.','FlipTracker Pro',6);
 }
 function migrateToSchema1_(){buildAdminSprint3_();buildSettingsSprint3_();buildInventorySprint3_();}
@@ -34,4 +35,5 @@ function migrateToSchema43_(){buildPackagingSprint3_();buildSalesSprint3_();refr
 function migrateToSchema44_(){buildAdminSprint3_();buildInventorySprint3_();buildSalesSprint3_();}
 function migrateToSchema45_(){buildInventorySprint3_();buildSalesSprint3_();}
 function migrateToSchema46_(){buildSalesSprint3_();}
+function migrateToSchema47_(){buildAdminSprint3_();buildSalesSprint3_();}
 function getFlipTrackerVersion(){const p=PropertiesService.getDocumentProperties();return{appVersion:p.getProperty('FTP_APP_VERSION')||FTP3.VERSION,schemaVersion:p.getProperty('FTP_SCHEMA_VERSION')||'unversioned'};}

@@ -1,10 +1,10 @@
 # Changelog
 
-## v0.4.6 — Sales Form Save Fix
+## v0.4.7 — Sale Save and Marketplace Fix
 
-- Replaced the fragile submit handler with a direct **Accept Sale** action.
-- Added client-side validation for required sale fields and packaging selections.
-- Added a visible Saving state and disabled duplicate clicks while saving.
-- Added clear success and server-error messages inside the form.
-- Escaped dropdown labels to prevent special characters from breaking the HTML form.
-- The server now returns the saved Sale ID after a successful save.
+- Fixed the Sales form appearing to freeze while saving.
+- Removed the full Dashboard rebuild from the locked sale-save transaction.
+- Reduced the document-lock wait from 30 seconds to 5 seconds.
+- Added a 20-second save watchdog with recovery instructions.
+- Changed Marketplace to a dropdown sourced from Admin → Marketplaces.
+- Retained duplicate-sale protection, packaging deductions, and Sale Pending handling.

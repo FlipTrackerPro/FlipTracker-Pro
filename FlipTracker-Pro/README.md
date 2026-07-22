@@ -1,7 +1,18 @@
-# FlipTracker Pro v0.4.6
+# FlipTracker Pro v0.4.7
 
-This release fixes the Sales form Accept Sale button.
+## Fixed sale saving
 
-After replacing the Apps Script files, run `upgradeFlipTrackerPro()`, reload the spreadsheet, select a Sale Pending inventory row, and use **FlipTracker Pro → Complete Selected Pending Sale**.
+The sale is now written and finalized without rebuilding the full Dashboard while
+the document lock is held. This prevents the form remaining stuck on **Saving…**.
 
-The form now displays validation and server errors directly rather than silently doing nothing.
+If a response takes longer than 20 seconds, the form displays a warning. Check the
+Sales sheet before retrying because a slow connection may have completed the save.
+
+## Marketplace dropdown
+
+Marketplace values are taken from the **Marketplaces** column on the Admin sheet.
+Edit that list to control the choices displayed in the Record Sale form.
+
+## Upgrade
+
+Replace the Apps Script files, run `upgradeFlipTrackerPro()`, and reload the spreadsheet.
