@@ -7,7 +7,7 @@ function buildSalesSprint3_() {
   s.getRange(2,c['Sale Date'],FTP3.ROWS,1).setNumberFormat('yyyy-mm-dd');
   ['Sale Price','Shipping Charged','Shipping Actual','Packaging Cost','Marketplace Fees','Payment Fees','Promotion Expense','GST/HST Collected','Item Cost','Gross Revenue','Total Selling Costs','Net Proceeds','Realized Profit']
     .forEach(name=>s.getRange(2,c[name],FTP3.ROWS,1).setNumberFormat('$#,##0.00;[Red]-$#,##0.00'));
-  s.getRange(2,c['Realized ROI %'],FTP3.ROWS,1).setNumberFormat('0.0%;[Red]-0.0%');
+  s.getRange(2,c['Realized ROI %'],FTP3.ROWS,1).setNumberFormat('0%;[Red]-0%');
   s.getRange(2,c['Days to Sell'],FTP3.ROWS,1).setNumberFormat('0');
   s.getRange(2,c['Created At'],FTP3.ROWS,1).setNumberFormat('yyyy-mm-dd hh:mm');
   const wholeQtyRule=SpreadsheetApp.newDataValidation().requireNumberBetween(0,1000000).setAllowInvalid(false).setHelpText('Enter a whole number only.').build();

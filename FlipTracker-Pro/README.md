@@ -1,15 +1,21 @@
-# FlipTracker Pro v0.5.5
+# FlipTracker Pro v0.6.0
 
-This release fixes Complete Sale packaging quantities and the Inventory Days in Inventory display.
+This release fixes false Cost Per Unit audit errors.
 
-## Packaging quantities
+Example:
 
-Box, bubble wrap, mailer, tape, and other packaging quantities accept whole numbers only. The Sales sheet stores and displays them with no decimal places.
+- Purchase Cost: `$2.99`
+- Units Purchased: `125 feet`
+- Exact calculation: `$0.02392` per foot
+- Stored two-decimal Cost Per Unit: `$0.02`
 
-## Days in Inventory
-
-Days in Inventory is stored and displayed as an integer, not as a date.
+The Calculation Audit now compares `$0.02` with `$0.02`, instead of comparing the
+stored rounded value with the unrounded calculation.
 
 ## Upgrade
 
-Replace all Apps Script files, run `upgradeFlipTrackerPro()`, and reload the spreadsheet.
+1. Replace all Apps Script files.
+2. Run `upgradeFlipTrackerPro()`.
+3. Reload the spreadsheet.
+4. Run **FlipTracker Pro → Repair Packaging Cost Audit**.
+5. Run **FlipTracker Pro → Run Calculation Audit**.

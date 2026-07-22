@@ -70,7 +70,7 @@ function buildSettingsSprint3_() {
   borders3_(s.getRange(1,1,values.length,3));
   s.setFrozenRows(1);
   s.setColumnWidths(1,3,220);
-  s.getRange('B9').setNumberFormat('0.00%');
+  s.getRange('B9').setNumberFormat('0%');
   s.getRange('B10').setNumberFormat('$#,##0.00');
   s.getRange('B13').setNumberFormat('$#,##0.00');
   const yesNo = SpreadsheetApp.newDataValidation().requireValueInList(['Yes','No'],true).setAllowInvalid(false).build();

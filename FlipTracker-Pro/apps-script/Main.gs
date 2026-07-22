@@ -6,9 +6,12 @@ function installFlipTrackerPro() {
   buildInventorySprint3_(); // Always repair validation and calculated columns.
   buildInventorySprint3_();
   repairInventoryCalculations3_();
-  p.setProperty('FTP_SCHEMA_VERSION','5.5'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
+  repairPackagingCostPerUnit3_();
+  repairWholeNumberValues3_();
+  applyFlipTrackerNumberFormats3_();
+  p.setProperty('FTP_SCHEMA_VERSION','6.0'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
   goToDashboardSprint3();
-  SpreadsheetApp.getActive().toast('FlipTracker Pro v0.5.5 is ready.','FlipTracker Pro',6);
+  SpreadsheetApp.getActive().toast('FlipTracker Pro v0.6.0 is ready.','FlipTracker Pro',6);
 }
 
 function upgradeFlipTrackerPro() {
@@ -33,10 +36,18 @@ function upgradeFlipTrackerPro() {
   if(current<5.3) migrateToSchema53_();
   if(current<5.4) migrateToSchema54_();
   if(current<5.5) migrateToSchema55_();
+  if(current<5.6) migrateToSchema56_();
+  if(current<5.7) migrateToSchema57_();
+  if(current<5.8) migrateToSchema58_();
+  if(current<5.9) migrateToSchema59_();
+  if(current<6.0) migrateToSchema60_();
   buildInventorySprint3_();
   repairInventoryCalculations3_();
-  p.setProperty('FTP_SCHEMA_VERSION','5.5'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
-  SpreadsheetApp.getActive().toast('FlipTracker Pro upgraded to schema 5.5.','FlipTracker Pro',6);
+  repairPackagingCostPerUnit3_();
+  repairWholeNumberValues3_();
+  applyFlipTrackerNumberFormats3_();
+  p.setProperty('FTP_SCHEMA_VERSION','6.0'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
+  SpreadsheetApp.getActive().toast('FlipTracker Pro upgraded to schema 6.0.','FlipTracker Pro',6);
 }
 function migrateToSchema1_(){buildAdminSprint3_();buildSettingsSprint3_();buildInventorySprint3_();}
 function migrateToSchema2_(){buildInventorySprint3_();}
@@ -77,3 +88,13 @@ function migrateToSchema53_(){buildInventorySprint3_();repairInventoryCalculatio
 function migrateToSchema54_(){buildInventorySprint3_();repairInventoryCalculations3_();buildSalesSprint3_();buildDashboardSprint3_();buildTaxCentreV04_();}
 function migrateToSchema55_(){buildInventorySprint3_();repairInventoryCalculations3_();buildSalesSprint3_();}
 function getFlipTrackerVersion(){const p=PropertiesService.getDocumentProperties();return{appVersion:p.getProperty('FTP_APP_VERSION')||FTP3.VERSION,schemaVersion:p.getProperty('FTP_SCHEMA_VERSION')||'unversioned'};}
+
+function migrateToSchema56_(){buildSalesSprint3_();repairSalesPackagingIds3_();refreshPackagingDropdowns3_();}
+
+function migrateToSchema57_(){buildPackagingSprint3_();repairPackagingCostPerUnit3_();repairWholeNumberValues3_();applyFlipTrackerNumberFormats3_();buildSalesSprint3_();buildExpensesSprint3_();buildMileageSprint3_();}
+
+function migrateToSchema58_(){buildExpensesSprint3_();repairExpenseCalculations3_();applyFlipTrackerNumberFormats3_();}
+
+function migrateToSchema59_(){normalizeExpenseBusinessUse3_();repairExpenseCalculations3_();applyFlipTrackerNumberFormats3_();}
+
+function migrateToSchema60_(){repairPackagingCostPerUnit3_();applyFlipTrackerNumberFormats3_();}

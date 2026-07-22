@@ -128,3 +128,104 @@ function sheetColumnLetter3_(sheetName,headerName) {
   if(!map[headerName])throw new Error(sheetName+' is missing required column: '+headerName);
   return columnLetter3_(map[headerName]);
 }
+
+
+function applyFlipTrackerNumberFormats3_() {
+  const currency='$#,##0.00;[Red]-$#,##0.00';
+  const integer='0';
+  const percent='0%;[Red]-0%';
+
+  const specs=[
+    {
+      sheet:FTP3.SHEETS.INVENTORY,
+      currency:['Purchase Price','Tax Paid','Acquisition Shipping','Total Cost','Listed Price','Expected Sale Price','Projected Profit'],
+      integer:['Quantity','Days in Inventory'],
+      percent:['Projected ROI %']
+    },
+    {
+      sheet:FTP3.SHEETS.SALES,
+      currency:['Sale Price','Shipping Charged','Shipping Actual','Packaging Cost','Marketplace Fees','Payment Fees','Promotion Expense','GST/HST Collected','Item Cost','Gross Revenue','Total Selling Costs','Net Proceeds','Realized Profit'],
+      integer:['Days to Sell','Box Qty','Bubble Wrap Qty','Mailer Qty','Tape Qty','Other Packaging Qty'],
+      percent:['Realized ROI %']
+    },
+    {
+      sheet:FTP3.SHEETS.EXPENSES,
+      currency:['Subtotal','GST/HST Paid','Total','Deductible Amount'],
+      integer:[],
+      percent:['Business Use %']
+    },
+    {
+      sheet:FTP3.SHEETS.MILEAGE,
+      currency:['CRA Rate','Claim Amount'],
+      integer:['Odometer Start','Odometer End','Total Kilometres','Business Kilometres'],
+      percent:[]
+    },
+    {
+      sheet:FTP3.SHEETS.PACKAGING,
+      currency:['Purchase Cost','Cost Per Unit'],
+      integer:['Units Purchased','Quantity On Hand','Reorder Level'],
+      percent:[]
+    }
+  ];
+
+  specs.forEach(spec=>{
+    const s=SpreadsheetApp.getActive().getSheetByName(spec.sheet);
+    if(!s)return;
+    const map=headerMap3_(s);
+    spec.currency.forEach(h=>{if(map[h])s.getRange(2,map[h],Math.max(1,s.getMaxRows()-1),1).setNumberFormat(currency);});
+    spec.integer.forEach(h=>{if(map[h])s.getRange(2,map[h],Math.max(1,s.getMaxRows()-1),1).setNumberFormat(integer);});
+    spec.percent.forEach(h=>{if(map[h])s.getRange(2,map[h],Math.max(1,s.getMaxRows()-1),1).setNumberFormat(percent);});
+  });
+
+  const admin=SpreadsheetApp.getActive().getSheetByName(FTP3.SHEETS.ADMIN);
+  if(admin){
+    admin.getRange('B9').setNumberFormat('0%');
+    admin.getRange('B10').setNumberFormat(currency);
+    admin.getRange('B13').setNumberFormat(currency);
+  }
+}
+
+function wholeNumberRule3_(minimum) {
+  return SpreadsheetApp.newDataValidation()
+    .requireFormulaSatisfied('=OR(INDIRECT(ADDRESS(ROW(),COLUMN()))="",AND(ISNUMBER(INDIRECT(ADDRESS(ROW(),COLUMN()))),INDIRECT(ADDRESS(ROW(),COLUMN()))=INT(INDIRECT(ADDRESS(ROW(),COLUMN()))),INDIRECT(ADDRESS(ROW(),COLUMN()))>='+Number(minimum||0)+'))')
+    .setAllowInvalid(false)
+    .setHelpText('Enter a whole number with no decimal places.')
+    .build();
+}
+
+function repairWholeNumberValues3_() {
+  const specs=[
+    [FTP3.SHEETS.INVENTORY,['Quantity','Days in Inventory']],
+    [FTP3.SHEETS.SALES,['Days to Sell','Box Qty','Bubble Wrap Qty','Mailer Qty','Tape Qty','Other Packaging Qty']],
+    [FTP3.SHEETS.MILEAGE,['Odometer Start','Odometer End','Total Kilometres','Business Kilometres']],
+    [FTP3.SHEETS.PACKAGING,['Units Purchased','Quantity On Hand','Reorder Level']]
+  ];
+
+  specs.forEach(([sheetName,headers])=>{
+    const s=SpreadsheetApp.getActive().getSheetByName(sheetName);
+    if(!s||s.getLastRow()<2)return;
+    const map=headerMap3_(s);
+    headers.forEach(header=>{
+      if(!map[header])return;
+      const range=s.getRange(2,map[header],s.getLastRow()-1,1);
+      const values=range.getValues().map(([v])=>{
+        if(v===''||v===null||v instanceof Date)return [v];
+        const n=Number(v);
+        return [Number.isFinite(n)?Math.round(n):v];
+      });
+      range.setValues(values).setNumberFormat('0');
+    });
+  });
+}
+
+function standardizeFlipTrackerNumbers() {
+  repairWholeNumberValues3_();
+  repairPackagingCostPerUnit3_();
+  applyFlipTrackerNumberFormats3_();
+  SpreadsheetApp.flush();
+  SpreadsheetApp.getUi().alert(
+    'Number Formatting Complete',
+    'All non-currency numeric fields now display as whole numbers. Dollar fields display two decimal places. Packaging Cost Per Unit has been recalculated.',
+    SpreadsheetApp.getUi().ButtonSet.OK
+  );
+}

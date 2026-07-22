@@ -9,7 +9,7 @@ function buildDashboardSprint3_() {
     ['A4:B6','Current Inventory Cost',`SUMIFS(Inventory!${iTotal}2:${iTotal},Inventory!${iStatus}2:${iStatus},"<>Sold",Inventory!${iStatus}2:${iStatus},"<>Archived")`,'$#,##0.00'],
     ['C4:D6','Gross Sales',`SUM(Sales!${sGross}2:${sGross})`,'$#,##0.00'],
     ['E4:F6','Realized Profit',`SUM(Sales!${sProfit}2:${sProfit})`,'$#,##0.00'],
-    ['G4:H6','Average ROI',`IFERROR(AVERAGE(FILTER(Sales!${sRoi}2:${sRoi},Sales!${sId}2:${sId}<>"")),0)`,'0.0%'],
+    ['G4:H6','Average ROI',`IFERROR(AVERAGE(FILTER(Sales!${sRoi}2:${sRoi},Sales!${sId}2:${sId}<>"")),0)`,'0%'],
     ['A8:B10','Items Sold',`COUNTA(Sales!${sId}2:${sId})`,'0'],
     ['C8:D10','Business Expenses','SUM(Expenses!J2:J)','$#,##0.00'],
     ['E8:F10','Mileage Claims','SUM(Mileage!K2:K)','$#,##0.00'],

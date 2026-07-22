@@ -1,10 +1,9 @@
 # Changelog
 
-## v0.5.5 — Whole Packaging Quantities and Days Format Fix
+## v0.6.0 — Packaging Cost Audit Rounding Fix
 
-- Complete Sale packaging quantity fields now use whole-number increments.
-- Server rejects decimal packaging quantities instead of silently saving them.
-- Sales packaging quantity columns are formatted as integers and validated as non-negative whole quantities.
-- Days in Inventory is explicitly formatted as a whole number, correcting cells that inherited a date format.
-- Existing Inventory rows are recalculated and reformatted during upgrade.
-- Sales column formatting now uses header-name mappings rather than fixed positions.
+- Fixed false Packaging audit errors for low-cost units such as tape measured by the foot.
+- Cost Per Unit remains rounded to two decimal places.
+- Calculation Audit now rounds the expected Cost Per Unit to two decimal places before comparing.
+- Audit messages now show the expected rounded dollar value.
+- Added **Repair Packaging Cost Audit** menu command.

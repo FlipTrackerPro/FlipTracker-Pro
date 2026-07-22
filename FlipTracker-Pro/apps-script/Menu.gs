@@ -21,6 +21,11 @@ function onOpen() {
     .addItem('Refresh CRA Tax Centre','refreshTaxCentreV04')
     .addItem('Build Accountant Export','buildAccountantExportV04_')
     .addItem('Run Calculation Audit','runFlipTrackerCalculationAudit')
+    .addItem('Repair Sales Packaging IDs','repairSalesPackagingIds')
+    .addItem('Standardize Number Formats','standardizeFlipTrackerNumbers')
+    .addItem('Repair Packaging Cost Per Unit','repairPackagingCostPerUnit')
+    .addItem('Repair Packaging Cost Audit','repairPackagingCostAudit')
+    .addItem('Repair Expense Calculations','repairExpenseCalculations')
     .addItem('Repair Inventory Calculations','repairInventoryCalculations')
     .addItem('Go to Dashboard','goToDashboardSprint3')
     .addToUi();
