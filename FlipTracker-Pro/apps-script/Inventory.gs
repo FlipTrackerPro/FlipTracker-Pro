@@ -23,8 +23,9 @@ function buildInventorySprint3_() {
   s.getRange(2,c['Projected ROI %'],FTP3.ROWS,1).setNumberFormat('0%;[Red]-0%');
   s.getRange(2,c['Days in Inventory'],FTP3.ROWS,1).setNumberFormat('0');
 
-  // Calculated fields are maintained by a header-based recalculation routine.
+  // Calculated fields are maintained by header-based recalculation routines.
   repairInventoryCalculations3_(s);
+  repairInventoryHealth71_(s);
   ['Created At','Updated At'].forEach(name=>s.getRange(2,c[name],FTP3.ROWS,1).setNumberFormat('yyyy-mm-dd hh:mm'));
 
   if(s.getFilter())s.getFilter().remove();
@@ -42,6 +43,7 @@ function buildInventorySprint3_() {
     SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=AND($'+daysLetter+'2>=60,$'+daysLetter+'2<90,$'+descriptionLetter+'2<>"",$'+statusLetter+'2<>"Sold")').setBackground(FTP3.COLORS.ORANGE).setRanges([data]).build(),
     SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=AND($'+daysLetter+'2>=90,$'+descriptionLetter+'2<>"",$'+statusLetter+'2<>"Sold",$'+statusLetter+'2<>"Archived")').setBackground(FTP3.COLORS.LIGHT_RED).setRanges([data]).build()
   ]);
+  applyInventoryHealthFormatting71_(s);
 
   s.hideColumns(c['Created At'],2);
 }
@@ -74,6 +76,7 @@ function saveInventoryItem(form) {
     'Total Cost':total,'Status':status,'Marketplace':form.marketplace||'',
     'Listing Date':listingDate,'Storage Location':form.storageLocation||'',
     'Listed Price':listed,'Expected Sale Price':expected,'Days in Inventory':days,
+    'Inventory Health':inventoryHealth71_(days,status,form.description),
     'Projected Profit':profit,'Projected ROI %':roi,
     'Created At':editing?(old['Created At']||now):now,'Updated At':now,
     'Notes':form.notes||'','Photo Link':form.photoLink||'','Receipt Link':form.receiptLink||''
@@ -90,7 +93,7 @@ function recalculateInventoryRow3_(sheet,row) {
   const c=headerMap3_(s);
   const description=String(s.getRange(row,c['Description']).getDisplayValue()||'').trim();
   if(!description){
-    ['Total Cost','Days in Inventory','Projected Profit','Projected ROI %'].forEach(h=>s.getRange(row,c[h]).clearContent());
+    ['Total Cost','Days in Inventory','Inventory Health','Projected Profit','Projected ROI %'].forEach(h=>s.getRange(row,c[h]).clearContent());
     return;
   }
   const purchasePrice=num3_(s.getRange(row,c['Purchase Price']).getValue());
@@ -111,6 +114,7 @@ function recalculateInventoryRow3_(sheet,row) {
   s.getRange(row,c['Days in Inventory']).setValue(days).setNumberFormat('0');
   s.getRange(row,c['Projected Profit']).setValue(profit).setNumberFormat('$#,##0.00;[Red]-$#,##0.00');
   s.getRange(row,c['Projected ROI %']).setValue(roi).setNumberFormat('0%;[Red]-0%');
+  recalculateInventoryHealthRow71_(s,row);
 }
 
 function repairInventoryCalculations3_(sheet) {
@@ -122,6 +126,7 @@ function repairInventoryCalculations3_(sheet) {
 function repairInventoryCalculations() {
   const s=sheet3_(FTP3.SHEETS.INVENTORY);
   repairInventoryCalculations3_(s);
+  repairInventoryHealth71_(s);
   SpreadsheetApp.flush();
-  SpreadsheetApp.getActive().toast('Inventory Total Cost and projected values recalculated.','FlipTracker Pro',6);
+  SpreadsheetApp.getActive().toast('Inventory costs, projections, age, and health recalculated.','FlipTracker Pro',6);
 }
