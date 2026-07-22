@@ -1,21 +1,6 @@
-# FlipTracker Pro v0.6.0
+# FlipTracker Pro v0.7.0 — Smart Mileage
 
-This release fixes false Cost Per Unit audit errors.
-
-Example:
-
-- Purchase Cost: `$2.99`
-- Units Purchased: `125 feet`
-- Exact calculation: `$0.02392` per foot
-- Stored two-decimal Cost Per Unit: `$0.02`
-
-The Calculation Audit now compares `$0.02` with `$0.02`, instead of comparing the
-stored rounded value with the unrounded calculation.
+Smart Mileage adds editable drop-down menus, reusable favorite trips, vehicle tracking, Google Maps route links, migration-safe mileage columns, and dashboard summaries by month, purpose, destination, and vehicle.
 
 ## Upgrade
-
-1. Replace all Apps Script files.
-2. Run `upgradeFlipTrackerPro()`.
-3. Reload the spreadsheet.
-4. Run **FlipTracker Pro → Repair Packaging Cost Audit**.
-5. Run **FlipTracker Pro → Run Calculation Audit**.
+Replace the Apps Script files, reload the spreadsheet, and run **FlipTracker Pro → Upgrade Existing Workbook** once. Existing mileage records are preserved. Manage the lists through **FlipTracker Pro → Manage Mileage Lists**.

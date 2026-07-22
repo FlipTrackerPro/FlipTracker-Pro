@@ -1,6 +1,6 @@
 function installFlipTrackerPro() {
   buildAdminSprint3_(); buildSettingsSprint3_(); buildInventorySprint3_();
-  buildSalesSprint3_(); buildExpensesSprint3_(); buildMileageSprint3_();
+  buildSalesSprint3_(); buildExpensesSprint3_(); buildMileageLists70_(); buildMileageSprint3_();
   buildPackagingSprint3_(); buildDashboardSprint3_(); buildTaxCentreV04_();
   const p=PropertiesService.getDocumentProperties();
   buildInventorySprint3_(); // Always repair validation and calculated columns.
@@ -9,9 +9,9 @@ function installFlipTrackerPro() {
   repairPackagingCostPerUnit3_();
   repairWholeNumberValues3_();
   applyFlipTrackerNumberFormats3_();
-  p.setProperty('FTP_SCHEMA_VERSION','6.0'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
+  p.setProperty('FTP_SCHEMA_VERSION','7.0'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
   goToDashboardSprint3();
-  SpreadsheetApp.getActive().toast('FlipTracker Pro v0.6.0 is ready.','FlipTracker Pro',6);
+  SpreadsheetApp.getActive().toast('FlipTracker Pro v0.7.0 Smart Mileage is ready.','FlipTracker Pro',6);
 }
 
 function upgradeFlipTrackerPro() {
@@ -41,13 +41,16 @@ function upgradeFlipTrackerPro() {
   if(current<5.8) migrateToSchema58_();
   if(current<5.9) migrateToSchema59_();
   if(current<6.0) migrateToSchema60_();
+  if(current<6.1) migrateToSchema61_();
+  if(current<6.2) migrateToSchema62_();
+  if(current<7.0) migrateToSchema70_();
   buildInventorySprint3_();
   repairInventoryCalculations3_();
   repairPackagingCostPerUnit3_();
   repairWholeNumberValues3_();
   applyFlipTrackerNumberFormats3_();
-  p.setProperty('FTP_SCHEMA_VERSION','6.0'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
-  SpreadsheetApp.getActive().toast('FlipTracker Pro upgraded to schema 6.0.','FlipTracker Pro',6);
+  p.setProperty('FTP_SCHEMA_VERSION','7.0'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
+  SpreadsheetApp.getActive().toast('FlipTracker Pro upgraded to schema 7.0.','FlipTracker Pro',6);
 }
 function migrateToSchema1_(){buildAdminSprint3_();buildSettingsSprint3_();buildInventorySprint3_();}
 function migrateToSchema2_(){buildInventorySprint3_();}
@@ -98,3 +101,9 @@ function migrateToSchema58_(){buildExpensesSprint3_();repairExpenseCalculations3
 function migrateToSchema59_(){normalizeExpenseBusinessUse3_();repairExpenseCalculations3_();applyFlipTrackerNumberFormats3_();}
 
 function migrateToSchema60_(){repairPackagingCostPerUnit3_();applyFlipTrackerNumberFormats3_();}
+
+function migrateToSchema61_(){repairPackagingCostPerUnit3_();}
+
+function migrateToSchema62_(){buildMileageSprint3_();buildDashboardSprint3_();applyFlipTrackerNumberFormats3_();}
+
+function migrateToSchema70_(){buildMileageLists70_();buildMileageSprint3_();buildDashboardSprint3_();applyFlipTrackerNumberFormats3_();}

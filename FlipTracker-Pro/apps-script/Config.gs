@@ -1,11 +1,11 @@
 const FTP3 = {
   APP_NAME: 'FlipTracker Pro',
-  VERSION: '0.6.0',
+  VERSION: '0.7.0',
   ROWS: 1000,
   SHEETS: {
     DASHBOARD:'Dashboard', INVENTORY:'Inventory', SALES:'Sales',
     EXPENSES:'Expenses', MILEAGE:'Mileage', PACKAGING:'Packaging',
-    ADMIN:'Admin', SETTINGS:'Settings', TAX_CENTRE:'Tax Centre', ACCOUNTANT_EXPORT:'Accountant Export', PACKAGING_LISTS:'Packaging Lists'
+    ADMIN:'Admin', SETTINGS:'Settings', TAX_CENTRE:'Tax Centre', ACCOUNTANT_EXPORT:'Accountant Export', PACKAGING_LISTS:'Packaging Lists', MILEAGE_LISTS:'Mileage Lists'
   },
   COLORS: {
     NAVY:'#1F4E78', BLUE:'#5B9BD5', LIGHT_BLUE:'#D9EAF7',
@@ -38,9 +38,9 @@ const FTP3 = {
     'Payment Method','Receipt Link','Notes','Created At'
   ],
   MILEAGE_HEADERS: [
-    'Trip ID','Date','Start','Destination','Business Purpose',
-    'Odometer Start','Odometer End','Total Kilometres',
-    'Business Kilometres','CRA Rate','Claim Amount','Notes','Created At'
+    'Trip ID','Date','Start Location','End Location','Business Purpose',
+    'Round Trip','Vehicle','Start Odometer','End Odometer','Google Maps Distance',
+    'Total Kilometres','Business Kilometres','CRA Rate','Claim Amount','Route Link','Notes','Created At'
   ],
   PACKAGING_HEADERS: [
     'Packaging ID','Category','Item Name','Size','Unit of Measure',

@@ -29,6 +29,12 @@ function num3_(value) {
   return Number.isFinite(n) ? n : 0;
 }
 
+
+function roundMoney3_(value) {
+  const n=num3_(value);
+  return Math.round((n+Number.EPSILON)*100)/100;
+}
+
 function date3_(value) {
   if (!value) return '';
   if (Object.prototype.toString.call(value) === '[object Date]') return value;
@@ -157,7 +163,7 @@ function applyFlipTrackerNumberFormats3_() {
     {
       sheet:FTP3.SHEETS.MILEAGE,
       currency:['CRA Rate','Claim Amount'],
-      integer:['Odometer Start','Odometer End','Total Kilometres','Business Kilometres'],
+      integer:['Start Odometer','End Odometer','Google Maps Distance','Total Kilometres','Business Kilometres'],
       percent:[]
     },
     {
@@ -197,7 +203,7 @@ function repairWholeNumberValues3_() {
   const specs=[
     [FTP3.SHEETS.INVENTORY,['Quantity','Days in Inventory']],
     [FTP3.SHEETS.SALES,['Days to Sell','Box Qty','Bubble Wrap Qty','Mailer Qty','Tape Qty','Other Packaging Qty']],
-    [FTP3.SHEETS.MILEAGE,['Odometer Start','Odometer End','Total Kilometres','Business Kilometres']],
+    [FTP3.SHEETS.MILEAGE,['Start Odometer','End Odometer','Google Maps Distance','Total Kilometres','Business Kilometres']],
     [FTP3.SHEETS.PACKAGING,['Units Purchased','Quantity On Hand','Reorder Level']]
   ];
 
