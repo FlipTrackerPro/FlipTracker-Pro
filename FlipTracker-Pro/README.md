@@ -1,12 +1,16 @@
-# FlipTracker Pro v0.4.3 — Dynamic Packaging Dropdowns
+# FlipTracker Pro v0.4.5
 
-This release connects the Sales sheet packaging columns directly to active supplies on the Packaging sheet.
+## Reliable automatic sale workflow
 
-## Highlights
-- Category-filtered dropdowns for Box, Bubble Wrap, Mailer, Tape, and Other Packaging
-- Automatic refresh when a packaging item is added, renamed, recategorized, or activated/deactivated
-- Friendly dropdown labels backed by permanent Packaging IDs
-- SKU / Barcode field on Packaging
-- Existing stock validation, cost calculation, and inventory deduction retained
+Google Apps Script edit triggers cannot reliably display an HTML modal dialog.
+For that reason, v0.4.5 uses a dependable two-step workflow:
 
-Run `upgradeFlipTrackerPro()` in an existing workbook.
+1. On the Inventory sheet, change the Status to **Sold**.
+2. FlipTracker Pro changes it to **Sale Pending**, highlights the row, and shows a reminder.
+3. Keep the row selected and choose:
+   **FlipTracker Pro → Complete Selected Pending Sale**
+4. The Record Sale form opens with the Inventory item preselected.
+5. Saving the form creates the Sales record, deducts packaging, calculates profit,
+   and changes the Inventory status to **Sold**.
+
+Run `upgradeFlipTrackerPro()` after replacing the Apps Script files.

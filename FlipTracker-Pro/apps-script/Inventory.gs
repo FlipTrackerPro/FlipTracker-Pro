@@ -25,6 +25,8 @@ function buildInventorySprint3_() {
 
   const data = s.getRange(2,1,FTP3.ROWS,h.length);
   s.setConditionalFormatRules([
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$S2="Sale Pending"')
+      .setBackground(FTP3.COLORS.GOLD).setRanges([data]).build(),
     SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$S2="Sold"')
       .setBackground(FTP3.COLORS.LIGHT_GREEN).setRanges([data]).build(),
     SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$S2="Listed"')

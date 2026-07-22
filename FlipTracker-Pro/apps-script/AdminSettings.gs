@@ -4,7 +4,7 @@ function buildAdminSprint3_() {
     Categories:['Electronics','Tools','Collectibles','Clothing','Furniture','Automotive','Household','Other'],
     PurchaseLocations:['Garage Sale','Thrift Store','Value Village','Facebook Marketplace','Auction','Retail Clearance','Other'],
     Marketplaces:['eBay','Facebook Marketplace','Kijiji','Poshmark','Etsy','Local Sale','Other'],
-    Statuses:['Purchased','Needs Cleaning','Needs Testing','Ready to List','Listed','Sold','Shipped','Archived'],
+    Statuses:['Purchased','Needs Cleaning','Needs Testing','Ready to List','Listed','Sale Pending','Sold','Shipped','Archived'],
     Conditions:['New','Open Box','Like New','Good','Fair','For Parts'],
     StorageLocations:['Garage','Basement','Shelf A','Shelf B','Bin 1','Bin 2','Other'],
     ExpenseCategories:['Fuel','Packaging','Shipping Supplies','Advertising','Storage','Phone','Internet','Office','Software','Bank Fees','Equipment','Professional Fees','Other'],

@@ -1,6 +1,6 @@
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('FlipTracker Pro')
-    .addItem('Install / Repair v0.4.3','installFlipTrackerPro')
+    .addItem('Install / Repair v0.4.5','installFlipTrackerPro')
     .addItem('Upgrade Existing Workbook','upgradeFlipTrackerPro')
     .addSeparator()
     .addItem('Add Inventory Item','showAddItemForm')
@@ -8,6 +8,7 @@ function onOpen() {
     .addItem('Find Inventory Item','findInventoryItem')
     .addItem('Show Slow Inventory','showSlowInventory')
     .addSeparator()
+    .addItem('Complete Selected Pending Sale','completeSelectedPendingSale3_')
     .addItem('Record Sale','showRecordSaleForm')
     .addItem('Record Expense','showRecordExpenseForm')
     .addItem('Record Mileage','showRecordMileageForm')

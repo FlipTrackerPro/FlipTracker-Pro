@@ -155,7 +155,28 @@ function refreshPackagingDropdowns3_() {
 function onEdit(e) {
   if(!e||!e.range)return;
   const sheet=e.range.getSheet();
-  if(sheet.getName()!==FTP3.SHEETS.PACKAGING||e.range.getRow()===1)return;
-  const relevant=[1,2,3,4,14];
-  if(relevant.indexOf(e.range.getColumn())>=0)refreshPackagingDropdowns3_();
+  if(sheet.getName()===FTP3.SHEETS.PACKAGING && e.range.getRow()>1){
+    const relevant=[1,2,3,4,14];
+    if(relevant.indexOf(e.range.getColumn())>=0)refreshPackagingDropdowns3_();
+    return;
+  }
+  if(sheet.getName()===FTP3.SHEETS.INVENTORY && e.range.getRow()>1 && e.range.getColumn()===19 && String(e.value)==='Sold'){
+    const row=e.range.getRow();
+    const itemId=sheet.getRange(row,1).getDisplayValue();
+    if(!itemId)return;
+    if(saleExistsForInventory3_(itemId)){
+      SpreadsheetApp.getActive().toast('A Sales record already exists for '+itemId+'.','FlipTracker Pro',6);
+      return;
+    }
+    const previous=e.oldValue||'Listed';
+    PropertiesService.getDocumentProperties().setProperty('FTP_PREV_STATUS_'+itemId,previous);
+    e.range.setValue('Sale Pending');
+    e.range.setNote('Sale details are incomplete. Keep this row selected, then use FlipTracker Pro → Complete Selected Pending Sale.');
+    sheet.setActiveRange(sheet.getRange(row,1,1,FTP3.INVENTORY_HEADERS.length));
+    SpreadsheetApp.getActive().toast(
+      'Sale Pending created for '+itemId+'. Use FlipTracker Pro → Complete Selected Pending Sale.',
+      'Complete the sale',
+      10
+    );
+  }
 }
