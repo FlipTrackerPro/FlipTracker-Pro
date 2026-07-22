@@ -20,13 +20,13 @@ function completeSelectedPendingSale3_() {
   }
   const row=range.getRow();
   const itemId=sheet.getRange(row,1).getDisplayValue();
-  const status=sheet.getRange(row,19).getDisplayValue();
+  const invMap=headerMap3_(sheet);const status=sheet.getRange(row,invMap['Status']).getDisplayValue();
   if(!itemId){
     SpreadsheetApp.getUi().alert('The selected Inventory row does not have an Item ID.');
     return;
   }
   if(saleExistsForInventory3_(itemId)){
-    sheet.getRange(row,19).setValue('Sold').clearNote();
+    sheet.getRange(row,invMap['Status']).setValue('Sold').clearNote();
     SpreadsheetApp.getUi().alert('A Sales record already exists for '+itemId+'. The Inventory status was set to Sold.');
     return;
   }
@@ -38,7 +38,7 @@ function completeSelectedPendingSale3_() {
     );
     if(response!==SpreadsheetApp.getUi().Button.YES)return;
     PropertiesService.getDocumentProperties().setProperty('FTP_PREV_STATUS_'+itemId,status||'Listed');
-    sheet.getRange(row,19).setValue('Sale Pending');
+    sheet.getRange(row,invMap['Status']).setValue('Sale Pending');
   }
   showRecordSaleFormForItem3_(itemId);
 }
@@ -46,7 +46,7 @@ function showRecordSaleFormForItem3_(itemId) {
   const items=activeInventoryChoices3_();
   if(itemId && !items.some(x=>x.id===itemId)){
     const item=inventoryItemById3_(itemId);
-    if(item)items.unshift({id:itemId,description:String(item.values[2]||'')});
+    if(item)items.unshift({id:itemId,description:String(rowRecord3_(FTP3.INVENTORY_HEADERS,item.values)['Description']||'')});
   }
   if(!items.length){SpreadsheetApp.getUi().alert('There are no active inventory items available to sell.');return;}
   const html=HtmlService.createHtmlOutput(saleFormHtml3_(items,packagingChoices3_(),marketplaceChoices3_(),itemId)).setWidth(680).setHeight(820);
@@ -136,18 +136,18 @@ function saveSale3_(form) {
     const paymentFees=num3_(form.paymentFees);
     const promotion=num3_(form.promotionExpense);
     const taxCollected=num3_(form.taxCollected);
-    const itemCost=num3_(inv[13]);
+    const invRecord=rowRecord3_(FTP3.INVENTORY_HEADERS,inv);const itemCost=num3_(invRecord['Total Cost']);
     const pkg=calculatePackagingUsage3_(form);
     const grossRevenue=salePrice+shippingCharged;
     const sellingCosts=shippingActual+pkg.total+marketFees+paymentFees+promotion;
     const netProceeds=grossRevenue-sellingCosts;
     const realizedProfit=netProceeds-itemCost;
     const roi=itemCost?realizedProfit/itemCost:'';
-    const purchaseDate=inv[1] instanceof Date?inv[1]:date3_(inv[1]);
+    const purchaseValue=invRecord['Purchase Date'];const purchaseDate=purchaseValue instanceof Date?purchaseValue:date3_(purchaseValue);
     const days=purchaseDate&&!isNaN(purchaseDate.getTime())?Math.max(0,Math.floor((saleDate-purchaseDate)/86400000)):'';
     const saleId=nextId3_(FTP3.SHEETS.SALES,1,'SAL');
     const record={
-      'Sale ID':saleId,'Item ID':itemId,'Description':String(inv[2]||''),
+      'Sale ID':saleId,'Item ID':itemId,'Description':String(invRecord['Description']||''),
       'Sale Date':saleDate,'Marketplace':String(form.marketplace||''),'Sale Price':salePrice,
       'Shipping Charged':shippingCharged,'Shipping Actual':shippingActual,'Packaging Cost':pkg.total,
       'Marketplace Fees':marketFees,'Payment Fees':paymentFees,'Promotion Expense':promotion,
@@ -198,9 +198,9 @@ function saleExistsForInventory3_(itemId){
 }
 function cancelPendingSale3_(itemId){
   const item=inventoryItemById3_(itemId);
-  if(item && String(item.values[18])==='Sale Pending'){
+  if(item && String(rowRecord3_(FTP3.INVENTORY_HEADERS,item.values)['Status'])==='Sale Pending'){
     const previous=PropertiesService.getDocumentProperties().getProperty('FTP_PREV_STATUS_'+itemId)||'Listed';
-    sheet3_(FTP3.SHEETS.INVENTORY).getRange(item.row,19).setValue(previous).clearNote();
+    const invSheet=sheet3_(FTP3.SHEETS.INVENTORY);const invMap=headerMap3_(invSheet);invSheet.getRange(item.row,invMap['Status']).setValue(previous).clearNote();
     PropertiesService.getDocumentProperties().deleteProperty('FTP_PREV_STATUS_'+itemId);
   }
 }

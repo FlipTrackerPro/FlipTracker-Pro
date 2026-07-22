@@ -1,10 +1,13 @@
 # Changelog
 
-## v0.4.9 — Header-Based Sales Save
+## v0.5.0 — Inventory Flow and Formula Audit
 
-- Replaced positional Sales writes with header-based record mapping.
-- Complete Sale now writes Item ID and Description to their exact named columns.
-- Added explicit checks for missing Sales columns and invalid sale dates.
-- Corrected packaging dropdown target columns after Description was added.
-- Added rollback if packaging or Inventory finalization fails.
-- Added server-side error logging and a success response containing the Sales row.
+- Reordered Inventory columns to follow identification → purchase → documentation → listing → performance → system fields.
+- Kept the column name **Purchase Price** unchanged.
+- Total Cost remains: Purchase Price × Quantity + Tax Paid + Acquisition Shipping.
+- Projected Profit now uses Listed Price when present, otherwise Expected Sale Price.
+- Automatically fills Listing Date when Status first changes to Listed.
+- Hid Created At and Updated At from normal Inventory entry.
+- Converted Inventory-dependent Sales, Dashboard, Tax Centre, and Audit logic to header-based lookups.
+- Added formula auditing for Total Cost, Projected Profit, Projected ROI, sales totals, packaging costing, expenses, and mileage.
+- Preserved existing data through header-name migration.

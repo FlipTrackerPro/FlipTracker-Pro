@@ -1,6 +1,6 @@
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('FlipTracker Pro')
-    .addItem('Install / Repair v0.4.9','installFlipTrackerPro')
+    .addItem('Install / Repair v0.5.0','installFlipTrackerPro')
     .addItem('Upgrade Existing Workbook','upgradeFlipTrackerPro')
     .addSeparator()
     .addItem('Add Inventory Item','showAddItemForm')

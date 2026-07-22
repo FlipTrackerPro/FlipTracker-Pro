@@ -1,6 +1,6 @@
 const FTP3 = {
   APP_NAME: 'FlipTracker Pro',
-  VERSION: '0.4.9',
+  VERSION: '0.5.0',
   ROWS: 1000,
   SHEETS: {
     DASHBOARD:'Dashboard', INVENTORY:'Inventory', SALES:'Sales',
@@ -14,12 +14,12 @@ const FTP3 = {
     BORDER:'#B7C9D6', WHITE:'#FFFFFF', TEXT:'#1F2937'
   },
   INVENTORY_HEADERS: [
-    'Item ID','Purchase Date','Description','SKU','Barcode','Category',
-    'Purchase Location','Storage Location','Condition','Quantity',
-    'Purchase Price','Tax Paid','Acquisition Shipping','Total Cost',
-    'Expected Sale Price','Listed Price','Marketplace','Listing Date',
-    'Status','Days in Inventory','Projected Profit','Projected ROI %',
-    'Receipt Link','Photo Link','Notes','Created At','Updated At'
+    'Item ID','Description','Category','Condition','SKU','Barcode','Quantity',
+    'Purchase Date','Purchase Location','Purchase Price','Tax Paid',
+    'Acquisition Shipping','Total Cost','Storage Location','Receipt Link',
+    'Photo Link','Notes','Status','Marketplace','Listing Date','Listed Price',
+    'Expected Sale Price','Days in Inventory','Projected Profit',
+    'Projected ROI %','Created At','Updated At'
   ],
   SALES_HEADERS: [
     'Sale ID','Item ID','Description','Sale Date','Marketplace','Sale Price',

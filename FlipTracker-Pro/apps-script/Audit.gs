@@ -1,42 +1,40 @@
 function runFlipTrackerCalculationAudit() {
-  const issues=[];
-  const add=(severity,area,row,message)=>issues.push([severity,area,row||'',message]);
-  const inv=sheet3_(FTP3.SHEETS.INVENTORY), sales=sheet3_(FTP3.SHEETS.SALES);
-  const exp=sheet3_(FTP3.SHEETS.EXPENSES), mil=sheet3_(FTP3.SHEETS.MILEAGE), pkg=sheet3_(FTP3.SHEETS.PACKAGING);
-  const invRows=inv.getLastRow()>1?inv.getRange(2,1,inv.getLastRow()-1,FTP3.INVENTORY_HEADERS.length).getValues():[];
-  invRows.forEach((r,i)=>{
-    if(!r[0])return; const expected=num3_(r[10])*Math.max(1,num3_(r[9]))+num3_(r[11])+num3_(r[12]);
-    if(Math.abs(num3_(r[13])-expected)>0.01)add('HIGH','Inventory',i+2,'Total Cost does not equal Purchase Price × Quantity + Tax + Acquisition Shipping.');
+  const issues=[],add=(severity,area,row,message)=>issues.push([severity,area,row||'',message]);
+  const inv=sheet3_(FTP3.SHEETS.INVENTORY),sales=sheet3_(FTP3.SHEETS.SALES),exp=sheet3_(FTP3.SHEETS.EXPENSES),mil=sheet3_(FTP3.SHEETS.MILEAGE),pkg=sheet3_(FTP3.SHEETS.PACKAGING);
+  const rows=(s,headers)=>s.getLastRow()>1?s.getRange(2,1,s.getLastRow()-1,headers.length).getValues():[];
+
+  rows(inv,FTP3.INVENTORY_HEADERS).forEach((r,i)=>{
+    const x=rowRecord3_(FTP3.INVENTORY_HEADERS,r);if(!x['Item ID'])return;
+    const expected=num3_(x['Purchase Price'])*Math.max(1,num3_(x['Quantity']))+num3_(x['Tax Paid'])+num3_(x['Acquisition Shipping']);
+    if(Math.abs(num3_(x['Total Cost'])-expected)>0.01)add('HIGH','Inventory',i+2,'Total Cost does not equal Purchase Price × Quantity + Tax Paid + Acquisition Shipping.');
+    const basis=num3_(x['Listed Price'])>0?num3_(x['Listed Price']):num3_(x['Expected Sale Price']);
+    const projected=basis>0?basis-expected:'';
+    if(projected!==''&&Math.abs(num3_(x['Projected Profit'])-projected)>0.01)add('MEDIUM','Inventory',i+2,'Projected Profit does not use Listed Price when available, otherwise Expected Sale Price, less Total Cost.');
+    const roi=expected&&projected!==''?projected/expected:'';
+    if(roi!==''&&Math.abs(num3_(x['Projected ROI %'])-roi)>0.0001)add('MEDIUM','Inventory',i+2,'Projected ROI % does not equal Projected Profit ÷ Total Cost.');
   });
-  const saleRows=sales.getLastRow()>1?sales.getRange(2,1,sales.getLastRow()-1,FTP3.SALES_HEADERS.length).getValues():[];
-  saleRows.forEach((r,i)=>{if(!r[0])return;
-    const gross=num3_(r[5])+num3_(r[6]); const costs=num3_(r[7])+num3_(r[8])+num3_(r[9])+num3_(r[10])+num3_(r[11]);
-    const net=gross-costs, profit=net-num3_(r[13]);
-    if(Math.abs(num3_(r[14])-gross)>0.01)add('CRITICAL','Sales',i+2,'Gross Revenue is inconsistent.');
-    if(Math.abs(num3_(r[15])-costs)>0.01)add('CRITICAL','Sales',i+2,'Total Selling Costs incorrectly includes or omits a cost.');
-    if(Math.abs(num3_(r[16])-net)>0.01)add('CRITICAL','Sales',i+2,'Net Proceeds is inconsistent.');
-    if(Math.abs(num3_(r[17])-profit)>0.01)add('CRITICAL','Sales',i+2,'Realized Profit is inconsistent.');
+
+  const saleRows=rows(sales,FTP3.SALES_HEADERS);
+  saleRows.forEach((r,i)=>{
+    const x=rowRecord3_(FTP3.SALES_HEADERS,r);if(!x['Sale ID'])return;
+    const gross=num3_(x['Sale Price'])+num3_(x['Shipping Charged']);
+    const costs=num3_(x['Shipping Actual'])+num3_(x['Packaging Cost'])+num3_(x['Marketplace Fees'])+num3_(x['Payment Fees'])+num3_(x['Promotion Expense']);
+    const net=gross-costs,profit=net-num3_(x['Item Cost']);
+    if(Math.abs(num3_(x['Gross Revenue'])-gross)>0.01)add('CRITICAL','Sales',i+2,'Gross Revenue is inconsistent.');
+    if(Math.abs(num3_(x['Total Selling Costs'])-costs)>0.01)add('CRITICAL','Sales',i+2,'Total Selling Costs incorrectly includes or omits a cost.');
+    if(Math.abs(num3_(x['Net Proceeds'])-net)>0.01)add('CRITICAL','Sales',i+2,'Net Proceeds is inconsistent.');
+    if(Math.abs(num3_(x['Realized Profit'])-profit)>0.01)add('CRITICAL','Sales',i+2,'Realized Profit is inconsistent.');
+    const refs=[['Box Used','Box Qty'],['Bubble Wrap Used','Bubble Wrap Qty'],['Mailer Used','Mailer Qty'],['Tape Used','Tape Qty'],['Other Packaging Used','Other Packaging Qty']];
+    let calculated=0;refs.forEach(([idName,qtyName])=>{const id=x[idName],qty=x[qtyName];if(!id)return;const item=packagingItemById3_(String(id));if(!item)add('HIGH','Sales',i+2,'Packaging item no longer exists: '+id);else calculated+=num3_(item.values[7])*num3_(qty);});
+    if(String(x['Packaging Verified']||'')==='Yes'&&Math.abs(num3_(x['Packaging Cost'])-calculated)>0.011)add('HIGH','Sales',i+2,'Stored Packaging Cost does not match referenced Packaging IDs and quantities.');
   });
-  const expRows=exp.getLastRow()>1?exp.getRange(2,1,exp.getLastRow()-1,FTP3.EXPENSE_HEADERS.length).getValues():[];
-  expRows.forEach((r,i)=>{if(!r[0])return;const total=num3_(r[5])+num3_(r[6]);const ded=total*Math.min(1,Math.max(0,num3_(r[8])));
-    if(Math.abs(num3_(r[7])-total)>0.01)add('HIGH','Expenses',i+2,'Total does not equal Subtotal + GST/HST Paid.');
-    if(Math.abs(num3_(r[9])-ded)>0.01)add('HIGH','Expenses',i+2,'Deductible Amount does not equal Total × Business Use %.');
-  });
-  const milRows=mil.getLastRow()>1?mil.getRange(2,1,mil.getLastRow()-1,FTP3.MILEAGE_HEADERS.length).getValues():[];
-  milRows.forEach((r,i)=>{if(!r[0])return;const total=Math.max(0,num3_(r[6])-num3_(r[5]));
-    if(Math.abs(num3_(r[7])-total)>0.01)add('HIGH','Mileage',i+2,'Total Kilometres is inconsistent with odometers.');
-    if(num3_(r[8])>total+0.001)add('HIGH','Mileage',i+2,'Business Kilometres exceeds Total Kilometres.');
-    if(Math.abs(num3_(r[10])-num3_(r[8])*num3_(r[9]))>0.01)add('HIGH','Mileage',i+2,'Claim Amount does not equal Business Kilometres × CRA Rate.');
-  });
-  const pkgRows=pkg.getLastRow()>1?pkg.getRange(2,1,pkg.getLastRow()-1,FTP3.PACKAGING_HEADERS.length).getValues():[];
-  pkgRows.forEach((r,i)=>{if(!r[0])return;const cpu=num3_(r[5])?num3_(r[6])/num3_(r[5]):0;
-    if(Math.abs(num3_(r[7])-cpu)>0.001)add('MEDIUM','Packaging',i+2,'Cost Per Unit is inconsistent.');
-    if(num3_(r[8])<-0.000001)add('CRITICAL','Packaging',i+2,'Quantity On Hand is negative.');
-  });
-  saleRows.forEach((r,i)=>{if(!r[0])return;const refs=[[r[24],r[25]],[r[26],r[27]],[r[28],r[29]],[r[30],r[31]],[r[32],r[33]]];let calculated=0;refs.forEach(([id,qty])=>{if(!id)return;const item=packagingItemById3_(String(id));if(!item)add('HIGH','Sales',i+2,'A packaging item referenced by this sale no longer exists: '+id);else calculated+=num3_(item.values[7])*num3_(qty);});if(String(r[34]||'')==='Yes'&&Math.abs(num3_(r[8])-calculated)>0.011)add('HIGH','Sales',i+2,'Stored Packaging Cost does not match current referenced unit costs. Historical costs may have changed.');});
+
+  rows(exp,FTP3.EXPENSE_HEADERS).forEach((r,i)=>{const x=rowRecord3_(FTP3.EXPENSE_HEADERS,r);if(!x['Expense ID'])return;const total=num3_(x['Subtotal'])+num3_(x['GST/HST Paid']);const ded=total*Math.min(1,Math.max(0,num3_(x['Business Use %'])));if(Math.abs(num3_(x['Total'])-total)>0.01)add('HIGH','Expenses',i+2,'Total does not equal Subtotal + GST/HST Paid.');if(Math.abs(num3_(x['Deductible Amount'])-ded)>0.01)add('HIGH','Expenses',i+2,'Deductible Amount does not equal Total × Business Use %.');});
+  rows(mil,FTP3.MILEAGE_HEADERS).forEach((r,i)=>{const x=rowRecord3_(FTP3.MILEAGE_HEADERS,r);if(!x['Trip ID'])return;const total=Math.max(0,num3_(x['Odometer End'])-num3_(x['Odometer Start']));if(Math.abs(num3_(x['Total Kilometres'])-total)>0.01)add('HIGH','Mileage',i+2,'Total Kilometres is inconsistent with odometers.');if(num3_(x['Business Kilometres'])>total+0.001)add('HIGH','Mileage',i+2,'Business Kilometres exceeds Total Kilometres.');if(Math.abs(num3_(x['Claim Amount'])-num3_(x['Business Kilometres'])*num3_(x['CRA Rate']))>0.01)add('HIGH','Mileage',i+2,'Claim Amount is inconsistent.');});
+  rows(pkg,FTP3.PACKAGING_HEADERS).forEach((r,i)=>{const x=rowRecord3_(FTP3.PACKAGING_HEADERS,r);if(!x['Packaging ID'])return;const cpu=num3_(x['Units Purchased'])?num3_(x['Purchase Cost'])/num3_(x['Units Purchased']):0;if(Math.abs(num3_(x['Cost Per Unit'])-cpu)>0.001)add('MEDIUM','Packaging',i+2,'Cost Per Unit is inconsistent.');if(num3_(x['Quantity On Hand'])<0)add('CRITICAL','Packaging',i+2,'Quantity On Hand is negative.');});
+
   const q=sheet3_('Calculation Audit');q.clear();q.getRange(1,1,1,4).setValues([['Severity','Area','Row','Finding']]);header3_(q.getRange(1,1,1,4));
   if(issues.length)q.getRange(2,1,issues.length,4).setValues(issues);else q.getRange(2,1).setValue('PASS — no row-level calculation inconsistencies detected.');
   q.setFrozenRows(1);q.setColumnWidth(1,100);q.setColumnWidth(2,120);q.setColumnWidth(3,70);q.setColumnWidth(4,520);q.getRange('A:D').setWrap(true);
-  SpreadsheetApp.getActive().setActiveSheet(q);SpreadsheetApp.getActive().toast(issues.length+' calculation issue(s) found.','FlipTracker Pro Audit',8);
-  return issues;
+  SpreadsheetApp.getActive().setActiveSheet(q);SpreadsheetApp.getActive().toast(issues.length+' calculation issue(s) found.','FlipTracker Pro Audit',8);return issues;
 }

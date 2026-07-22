@@ -80,26 +80,28 @@ function calculateTaxCentreV041_(year) {
   const mileage=milSheet.getLastRow()>1?milSheet.getRange(2,1,milSheet.getLastRow()-1,FTP3.MILEAGE_HEADERS.length).getValues():[];
   const inYear=d=>d instanceof Date && !isNaN(d) && d>=start && d<=end;
 
-  const yearSales=sales.filter(r=>r[0]&&inYear(r[3]));
-  const grossRevenue=yearSales.reduce((n,r)=>n+num3_(r[14]),0);
-  const taxCollected=yearSales.reduce((n,r)=>n+num3_(r[12]),0);
-  const revenueExTax=grossRevenue; // Sales Gross Revenue deliberately excludes separately entered GST/HST.
-  const inventoryById={}; inventory.filter(r=>r[0]).forEach(r=>inventoryById[String(r[0])]=r);
+  const saleObjects=sales.map(r=>rowRecord3_(FTP3.SALES_HEADERS,r));
+  const inventoryObjects=inventory.map(r=>rowRecord3_(FTP3.INVENTORY_HEADERS,r));
+  const yearSales=saleObjects.filter(r=>r['Sale ID']&&inYear(r['Sale Date']));
+  const grossRevenue=yearSales.reduce((n,r)=>n+num3_(r['Gross Revenue']),0);
+  const taxCollected=yearSales.reduce((n,r)=>n+num3_(r['GST/HST Collected']),0);
+  const revenueExTax=grossRevenue;
+  const inventoryById={};inventoryObjects.filter(r=>r['Item ID']).forEach(r=>inventoryById[String(r['Item ID'])]=r);
   const specificCogs=yearSales.reduce((n,r)=>{
-    const source=inventoryById[String(r[1])];
-    const recoverableTax=regular&&source?num3_(source[11]):0;
-    return n+Math.max(0,num3_(r[13])-recoverableTax);
+    const source=inventoryById[String(r['Item ID'])];
+    const recoverableTax=regular&&source?num3_(source['Tax Paid']):0;
+    return n+Math.max(0,num3_(r['Item Cost'])-recoverableTax);
   },0);
-  const yearPurchases=inventory.filter(r=>r[0]&&inYear(r[1]));
-  const purchases=yearPurchases.reduce((n,r)=>n+Math.max(0,num3_(r[13])-(regular?num3_(r[11]):0)),0);
-  const inventoryItc=regular?yearPurchases.reduce((n,r)=>n+num3_(r[11]),0):0;
+  const yearPurchases=inventoryObjects.filter(r=>r['Item ID']&&inYear(r['Purchase Date']));
+  const purchases=yearPurchases.reduce((n,r)=>n+Math.max(0,num3_(r['Total Cost'])-(regular?num3_(r['Tax Paid']):0)),0);
+  const inventoryItc=regular?yearPurchases.reduce((n,r)=>n+num3_(r['Tax Paid']),0):0;
 
   const soldByEnd={};
-  sales.filter(r=>r[0]&&r[1]&&r[3] instanceof Date&&!isNaN(r[3])&&r[3]<=end)
-    .forEach(r=>{soldByEnd[String(r[1])]=true;});
-  const activeAtEnd=inventory.filter(r=>r[0]&&r[1] instanceof Date&&!isNaN(r[1])&&r[1]<=end&&!soldByEnd[String(r[0])]);
-  const endingInventory=activeAtEnd.reduce((n,r)=>n+Math.max(0,num3_(r[13])-(regular?num3_(r[11]):0)),0);
-  const cogs=specificCogs || Math.max(0,openingInventory+purchases-endingInventory);
+  saleObjects.filter(r=>r['Sale ID']&&r['Item ID']&&r['Sale Date'] instanceof Date&&!isNaN(r['Sale Date'])&&r['Sale Date']<=end)
+    .forEach(r=>{soldByEnd[String(r['Item ID'])]=true;});
+  const activeAtEnd=inventoryObjects.filter(r=>r['Item ID']&&r['Purchase Date'] instanceof Date&&!isNaN(r['Purchase Date'])&&r['Purchase Date']<=end&&!soldByEnd[String(r['Item ID'])]);
+  const endingInventory=activeAtEnd.reduce((n,r)=>n+Math.max(0,num3_(r['Total Cost'])-(regular?num3_(r['Tax Paid']):0)),0);
+  const cogs=specificCogs||Math.max(0,openingInventory+purchases-endingInventory);
   const grossProfit=revenueExTax-cogs;
 
   let expenseEntered=0, expenseItc=0, incomeTaxExpense=0;

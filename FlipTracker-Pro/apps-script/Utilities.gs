@@ -72,11 +72,13 @@ function inventoryItemById3_(itemId) {
 }
 
 function activeInventoryChoices3_() {
-  const s = sheet3_(FTP3.SHEETS.INVENTORY);
-  if (s.getLastRow() < 2) return [];
-  return s.getRange(2,1,s.getLastRow()-1,19).getDisplayValues()
-    .filter(r => r[0] && r[2] && !['Sold','Archived'].includes(r[18]))
-    .map(r => ({id:r[0], description:r[2] || ''}));
+  const s=sheet3_(FTP3.SHEETS.INVENTORY);
+  if(s.getLastRow()<2)return [];
+  const headers=s.getRange(1,1,1,s.getLastColumn()).getDisplayValues()[0].map(String);
+  const rows=s.getRange(2,1,s.getLastRow()-1,s.getLastColumn()).getDisplayValues();
+  const id=headerIndex3_(headers,'Item ID'), description=headerIndex3_(headers,'Description'), status=headerIndex3_(headers,'Status');
+  return rows.filter(r=>r[id]&&r[description]&&!['Sold','Archived'].includes(r[status]))
+    .map(r=>({id:r[id],description:r[description]||''}));
 }
 
 
@@ -102,4 +104,27 @@ function migrateSheetHeaders3_(sheetName, newHeaders, aliases) {
   s.clear(); ensureSize3_(s,Math.max(300,migrated.length+1),newHeaders.length);
   s.getRange(1,1,1,newHeaders.length).setValues([newHeaders]);
   if(migrated.length)s.getRange(2,1,migrated.length,newHeaders.length).setValues(migrated);
+}
+
+function headerIndex3_(headers,name) {
+  const i=headers.indexOf(name);
+  if(i<0)throw new Error('Required column not found: '+name);
+  return i;
+}
+
+function rowRecord3_(headers,row) {
+  return headers.reduce((o,h,i)=>{o[h]=row[i];return o;},{});
+}
+
+function columnLetter3_(column) {
+  let n=Number(column), result='';
+  while(n>0){n--;result=String.fromCharCode(65+(n%26))+result;n=Math.floor(n/26);}
+  return result;
+}
+
+function sheetColumnLetter3_(sheetName,headerName) {
+  const s=sheet3_(sheetName);
+  const map=headerMap3_(s);
+  if(!map[headerName])throw new Error(sheetName+' is missing required column: '+headerName);
+  return columnLetter3_(map[headerName]);
 }

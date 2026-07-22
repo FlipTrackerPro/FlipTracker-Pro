@@ -1,76 +1,74 @@
 function buildInventorySprint3_() {
   migrateSheetHeaders3_(FTP3.SHEETS.INVENTORY,FTP3.INVENTORY_HEADERS,{'Description':['Title']});
-  const s = sheet3_(FTP3.SHEETS.INVENTORY);
-  const h = FTP3.INVENTORY_HEADERS;
+  const s=sheet3_(FTP3.SHEETS.INVENTORY), h=FTP3.INVENTORY_HEADERS, c=headerMap3_(s);
   ensureSize3_(s,FTP3.ROWS+1,h.length);
-  s.getRange(1,1,1,h.length).setValues([h]);
-  header3_(s.getRange(1,1,1,h.length));
-  s.setFrozenRows(1);
-  s.setFrozenColumns(3);
-  s.setRowHeight(1,42);
+  s.getRange(1,1,1,h.length).setValues([h]);header3_(s.getRange(1,1,1,h.length));
+  s.setFrozenRows(1);s.setFrozenColumns(2);s.setRowHeight(1,42);
 
-  [[6,'FTP3_Categories'],[7,'FTP3_PurchaseLocations'],
-   [8,'FTP3_StorageLocations'],[9,'FTP3_Conditions'],
-   [17,'FTP3_Marketplaces'],[19,'FTP3_Statuses']]
-    .forEach(v => setValidation3_(s,v[0],v[1],FTP3.ROWS));
+  [
+    ['Category','FTP3_Categories'],['Purchase Location','FTP3_PurchaseLocations'],
+    ['Storage Location','FTP3_StorageLocations'],['Condition','FTP3_Conditions'],
+    ['Marketplace','FTP3_Marketplaces'],['Status','FTP3_Statuses']
+  ].forEach(v=>setValidation3_(s,c[v[0]],v[1],FTP3.ROWS));
 
-  s.getRange(2,2,FTP3.ROWS,1).setNumberFormat('yyyy-mm-dd');
-  s.getRange(2,18,FTP3.ROWS,1).setNumberFormat('yyyy-mm-dd');
-  s.getRange(2,11,FTP3.ROWS,6).setNumberFormat('$#,##0.00;[Red]-$#,##0.00');
-  s.getRange(2,21,FTP3.ROWS,1).setNumberFormat('$#,##0.00;[Red]-$#,##0.00');
-  s.getRange(2,22,FTP3.ROWS,1).setNumberFormat('0.0%;[Red]-0.0%');
-  s.getRange(2,26,FTP3.ROWS,2).setNumberFormat('yyyy-mm-dd hh:mm');
+  s.getRange(2,c['Purchase Date'],FTP3.ROWS,1).setNumberFormat('yyyy-mm-dd');
+  s.getRange(2,c['Listing Date'],FTP3.ROWS,1).setNumberFormat('yyyy-mm-dd');
+  ['Purchase Price','Tax Paid','Acquisition Shipping','Total Cost','Listed Price','Expected Sale Price','Projected Profit']
+    .forEach(name=>s.getRange(2,c[name],FTP3.ROWS,1).setNumberFormat('$#,##0.00;[Red]-$#,##0.00'));
+  s.getRange(2,c['Projected ROI %'],FTP3.ROWS,1).setNumberFormat('0.0%;[Red]-0.0%');
+  ['Created At','Updated At'].forEach(name=>s.getRange(2,c[name],FTP3.ROWS,1).setNumberFormat('yyyy-mm-dd hh:mm'));
 
-  if (s.getFilter()) s.getFilter().remove();
+  if(s.getFilter())s.getFilter().remove();
   s.getRange(1,1,FTP3.ROWS+1,h.length).createFilter();
 
-  const data = s.getRange(2,1,FTP3.ROWS,h.length);
+  const data=s.getRange(2,1,FTP3.ROWS,h.length);
+  const statusLetter=columnLetter3_(c['Status']);
+  const daysLetter=columnLetter3_(c['Days in Inventory']);
+  const descriptionLetter=columnLetter3_(c['Description']);
   s.setConditionalFormatRules([
-    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$S2="Sale Pending"')
-      .setBackground(FTP3.COLORS.GOLD).setRanges([data]).build(),
-    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$S2="Sold"')
-      .setBackground(FTP3.COLORS.LIGHT_GREEN).setRanges([data]).build(),
-    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$S2="Listed"')
-      .setBackground(FTP3.COLORS.LIGHT_BLUE).setRanges([data]).build(),
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied('=AND($T2>=30,$T2<60,$C2<>"",$S2<>"Sold")')
-      .setBackground(FTP3.COLORS.GOLD).setRanges([data]).build(),
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied('=AND($T2>=60,$T2<90,$C2<>"",$S2<>"Sold")')
-      .setBackground(FTP3.COLORS.ORANGE).setRanges([data]).build(),
-    SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied('=AND($T2>=90,$C2<>"",$S2<>"Sold",$S2<>"Archived")')
-      .setBackground(FTP3.COLORS.LIGHT_RED).setRanges([data]).build()
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$'+statusLetter+'2="Sale Pending"').setBackground(FTP3.COLORS.GOLD).setRanges([data]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$'+statusLetter+'2="Sold"').setBackground(FTP3.COLORS.LIGHT_GREEN).setRanges([data]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$'+statusLetter+'2="Listed"').setBackground(FTP3.COLORS.LIGHT_BLUE).setRanges([data]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=AND($'+daysLetter+'2>=30,$'+daysLetter+'2<60,$'+descriptionLetter+'2<>"",$'+statusLetter+'2<>"Sold")').setBackground(FTP3.COLORS.GOLD).setRanges([data]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=AND($'+daysLetter+'2>=60,$'+daysLetter+'2<90,$'+descriptionLetter+'2<>"",$'+statusLetter+'2<>"Sold")').setBackground(FTP3.COLORS.ORANGE).setRanges([data]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=AND($'+daysLetter+'2>=90,$'+descriptionLetter+'2<>"",$'+statusLetter+'2<>"Sold",$'+statusLetter+'2<>"Archived")').setBackground(FTP3.COLORS.LIGHT_RED).setRanges([data]).build()
   ]);
+
+  s.hideColumns(c['Created At'],2);
 }
 
 function saveInventoryItem(form) {
-  if (!form.description || !form.purchaseDate) throw new Error('Purchase date and description are required.');
-  const s = sheet3_(FTP3.SHEETS.INVENTORY);
-  const editing = Number(form.row) > 1;
-  const row = editing ? Number(form.row) : Math.max(s.getLastRow()+1,2);
-  const old = editing ? s.getRange(row,1,1,FTP3.INVENTORY_HEADERS.length).getValues()[0] : [];
-  const purchasePrice = num3_(form.purchasePrice);
-  const tax = num3_(form.taxPaid);
-  const shipping = num3_(form.acquisitionShipping);
-  const expected = num3_(form.expectedSalePrice);
-  const quantity = Math.max(1,Math.floor(num3_(form.quantity) || 1));
-  const total = purchasePrice * quantity + tax + shipping;
-  const profit = expected ? expected-total : '';
-  const roi = total && profit !== '' ? profit/total : '';
-  const purchaseDate = date3_(form.purchaseDate);
-  const days = Math.max(0,Math.floor((new Date()-purchaseDate)/86400000));
-  const now = new Date();
+  if(!form.description||!form.purchaseDate)throw new Error('Purchase date and description are required.');
+  const s=sheet3_(FTP3.SHEETS.INVENTORY), headers=FTP3.INVENTORY_HEADERS;
+  const editing=Number(form.row)>1, row=editing?Number(form.row):Math.max(s.getLastRow()+1,2);
+  const oldValues=editing?s.getRange(row,1,1,headers.length).getValues()[0]:[];
+  const old=editing?rowRecord3_(headers,oldValues):{};
+  const purchasePrice=num3_(form.purchasePrice), tax=num3_(form.taxPaid), shipping=num3_(form.acquisitionShipping);
+  const quantity=Math.max(1,Math.floor(num3_(form.quantity)||1));
+  const total=purchasePrice*quantity+tax+shipping;
+  const listed=num3_(form.listedPrice), expected=num3_(form.expectedSalePrice);
+  const projectionPrice=listed>0?listed:expected;
+  const profit=projectionPrice>0?projectionPrice-total:'';
+  const roi=total&&profit!==''?profit/total:'';
+  const purchaseDate=date3_(form.purchaseDate);
+  const days=Math.max(0,Math.floor((new Date()-purchaseDate)/86400000));
+  const status=String(form.status||'Purchased');
+  const listingDate=status==='Listed'?(old['Listing Date']||new Date()):(old['Listing Date']||'');
+  const now=new Date();
 
-  const values = [
-    editing ? old[0] : nextId3_(FTP3.SHEETS.INVENTORY,1,'ITM'),
-    purchaseDate,form.description,form.sku||'',form.barcode||'',form.category||'',
-    form.purchaseLocation||'',form.storageLocation||'',form.condition||'',
-    quantity,purchasePrice,tax,shipping,total,expected,
-    num3_(form.listedPrice),form.marketplace||'',old[17]||'',
-    form.status||'Purchased',days,profit,roi,form.receiptLink||'',
-    form.photoLink||'',form.notes||'',editing?(old[25]||now):now,now
-  ];
-  s.getRange(row,1,1,values.length).setValues([values]);
+  const record={
+    'Item ID':editing?old['Item ID']:nextId3_(FTP3.SHEETS.INVENTORY,1,'ITM'),
+    'Description':form.description,'Category':form.category||'','Condition':form.condition||'',
+    'SKU':form.sku||'','Barcode':form.barcode||'','Quantity':quantity,
+    'Purchase Date':purchaseDate,'Purchase Location':form.purchaseLocation||'',
+    'Purchase Price':purchasePrice,'Tax Paid':tax,'Acquisition Shipping':shipping,
+    'Total Cost':total,'Storage Location':form.storageLocation||'',
+    'Receipt Link':form.receiptLink||'','Photo Link':form.photoLink||'','Notes':form.notes||'',
+    'Status':status,'Marketplace':form.marketplace||'','Listing Date':listingDate,
+    'Listed Price':listed,'Expected Sale Price':expected,'Days in Inventory':days,
+    'Projected Profit':profit,'Projected ROI %':roi,
+    'Created At':editing?(old['Created At']||now):now,'Updated At':now
+  };
+  s.getRange(row,1,1,headers.length).setValues([headers.map(h=>record[h])]);
   refreshDashboardSprint3();
 }
