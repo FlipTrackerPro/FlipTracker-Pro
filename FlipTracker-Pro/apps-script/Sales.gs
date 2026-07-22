@@ -2,8 +2,19 @@ function buildSalesSprint3_() {
   migrateSheetHeaders3_(FTP3.SHEETS.SALES,FTP3.SALES_HEADERS,{});
   const s=sheet3_(FTP3.SHEETS.SALES);ensureSize3_(s,FTP3.ROWS+1,FTP3.SALES_HEADERS.length);
   s.getRange(1,1,1,FTP3.SALES_HEADERS.length).setValues([FTP3.SALES_HEADERS]);header3_(s.getRange(1,1,1,FTP3.SALES_HEADERS.length));s.setFrozenRows(1);
-  setValidation3_(s,5,'FTP3_Marketplaces',FTP3.ROWS);s.getRange(2,4,FTP3.ROWS,1).setNumberFormat('yyyy-mm-dd');s.getRange(2,6,FTP3.ROWS,13).setNumberFormat('$#,##0.00;[Red]-$#,##0.00');s.getRange(2,19,FTP3.ROWS,1).setNumberFormat('0.0%;[Red]-0.0%');s.getRange(2,24,FTP3.ROWS,1).setNumberFormat('yyyy-mm-dd hh:mm');
-  s.getRange(2,26,FTP3.ROWS,1).setNumberFormat('0.000');s.getRange(2,28,FTP3.ROWS,1).setNumberFormat('0.000');s.getRange(2,30,FTP3.ROWS,1).setNumberFormat('0.000');s.getRange(2,32,FTP3.ROWS,1).setNumberFormat('0.000');s.getRange(2,34,FTP3.ROWS,1).setNumberFormat('0.000');
+  const c=headerMap3_(s);
+  setValidation3_(s,c['Marketplace'],'FTP3_Marketplaces',FTP3.ROWS);
+  s.getRange(2,c['Sale Date'],FTP3.ROWS,1).setNumberFormat('yyyy-mm-dd');
+  ['Sale Price','Shipping Charged','Shipping Actual','Packaging Cost','Marketplace Fees','Payment Fees','Promotion Expense','GST/HST Collected','Item Cost','Gross Revenue','Total Selling Costs','Net Proceeds','Realized Profit']
+    .forEach(name=>s.getRange(2,c[name],FTP3.ROWS,1).setNumberFormat('$#,##0.00;[Red]-$#,##0.00'));
+  s.getRange(2,c['Realized ROI %'],FTP3.ROWS,1).setNumberFormat('0.0%;[Red]-0.0%');
+  s.getRange(2,c['Days to Sell'],FTP3.ROWS,1).setNumberFormat('0');
+  s.getRange(2,c['Created At'],FTP3.ROWS,1).setNumberFormat('yyyy-mm-dd hh:mm');
+  const wholeQtyRule=SpreadsheetApp.newDataValidation().requireNumberBetween(0,1000000).setAllowInvalid(false).setHelpText('Enter a whole number only.').build();
+  ['Box Qty','Bubble Wrap Qty','Mailer Qty','Tape Qty','Other Packaging Qty'].forEach(name=>{
+    const range=s.getRange(2,c[name],FTP3.ROWS,1);
+    range.clearDataValidations().setDataValidation(wholeQtyRule).setNumberFormat('0');
+  });
   if(s.getFilter())s.getFilter().remove();s.getRange(1,1,FTP3.ROWS+1,FTP3.SALES_HEADERS.length).createFilter();borders3_(s.getRange(1,1,Math.min(FTP3.ROWS+1,200),FTP3.SALES_HEADERS.length));
   if(SpreadsheetApp.getActive().getSheetByName(FTP3.SHEETS.PACKAGING))refreshPackagingDropdowns3_();
 }
@@ -60,7 +71,7 @@ function saleFormHtml3_(items,packages,marketplaces,selectedItemId) {
   return `<!doctype html><html><head><base target="_top"><style>
   body{font-family:Arial;padding:14px;color:#1F2937}label{display:block;font-weight:700;margin-top:8px}input,select,textarea{width:100%;box-sizing:border-box;padding:8px;margin-top:3px;border:1px solid #B7C9D6;border-radius:4px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.section{margin-top:14px;padding:10px;background:#F3F6F9;border-radius:6px}.summary{font-weight:700;margin-top:10px}.packageDetails{font-size:12px;color:#4B5563;margin-top:4px;min-height:16px}.actions{display:flex;align-items:center;gap:8px;margin-top:16px}.actions button{padding:10px 16px;border:0;border-radius:4px;background:#1F4E78;color:#fff;font-weight:700;cursor:pointer}.actions button:disabled{opacity:.55;cursor:not-allowed}.actions .cancel{background:#6B7280}.status{margin-top:10px;min-height:20px;font-weight:700}.error{color:#B91C1C}.success{color:#166534}</style></head><body><form id="f" novalidate>
   <div class="grid"><div><label>Item ID</label><select name="itemId" required>${itemOptions}</select></div><div><label>Description</label><input name="description" readonly></div></div><div class="grid"><div><label>Sale date</label><input type="date" name="saleDate" required></div><div><label>Marketplace</label><select name="marketplace" required>${marketplaceOptions}</select></div><div><label>Sale price</label><input type="number" step="0.01" min="0" name="salePrice" required></div><div><label>Shipping charged</label><input type="number" step="0.01" min="0" name="shippingCharged"></div><div><label>Shipping actual</label><input type="number" step="0.01" min="0" name="shippingActual"></div><div><label>Marketplace fees</label><input type="number" step="0.01" min="0" name="marketplaceFees"></div><div><label>Payment fees</label><input type="number" step="0.01" min="0" name="paymentFees"></div><div><label>Promotion expense</label><input type="number" step="0.01" min="0" name="promotionExpense"></div><div><label>GST/HST collected</label><input type="number" step="0.01" min="0" name="taxCollected"></div></div>
-  <div class="section"><b>Packaging used</b><div class="grid"><div><label>Box used (Packaging ID)</label><select name="boxId" class="pkg">${makeOptions('Box')}</select><div id="boxDetails" class="packageDetails"></div></div><div><label>Box quantity</label><input name="boxQty" class="qty" type="number" min="0" step="0.001" value="0"></div><div><label>Bubble wrap used</label><select name="bubbleId" class="pkg">${makeOptions('Bubble')}</select></div><div><label>Bubble wrap quantity</label><input name="bubbleQty" class="qty" type="number" min="0" step="0.001" value="0"></div><div><label>Mailer used</label><select name="mailerId" class="pkg">${makeOptions('Mailer')}</select></div><div><label>Mailer quantity</label><input name="mailerQty" class="qty" type="number" min="0" step="0.001" value="0"></div><div><label>Tape used</label><select name="tapeId" class="pkg">${makeOptions('Tape')}</select></div><div><label>Tape quantity</label><input name="tapeQty" class="qty" type="number" min="0" step="0.001" value="0"></div><div><label>Other packaging</label><select name="otherPackagingId" class="pkg">${makeOptions('Other')}</select></div><div><label>Other quantity</label><input name="otherPackagingQty" class="qty" type="number" min="0" step="0.001" value="0"></div></div><div class="summary">Calculated packaging cost: <span id="pkgCost">$0.00</span></div></div>
+  <div class="section"><b>Packaging used</b><div class="grid"><div><label>Box used (Packaging ID)</label><select name="boxId" class="pkg">${makeOptions('Box')}</select><div id="boxDetails" class="packageDetails"></div></div><div><label>Box quantity</label><input name="boxQty" class="qty" type="number" min="0" step="1" value="0"></div><div><label>Bubble wrap used</label><select name="bubbleId" class="pkg">${makeOptions('Bubble')}</select></div><div><label>Bubble wrap quantity</label><input name="bubbleQty" class="qty" type="number" min="0" step="1" value="0"></div><div><label>Mailer used</label><select name="mailerId" class="pkg">${makeOptions('Mailer')}</select></div><div><label>Mailer quantity</label><input name="mailerQty" class="qty" type="number" min="0" step="1" value="0"></div><div><label>Tape used</label><select name="tapeId" class="pkg">${makeOptions('Tape')}</select></div><div><label>Tape quantity</label><input name="tapeQty" class="qty" type="number" min="0" step="1" value="0"></div><div><label>Other packaging</label><select name="otherPackagingId" class="pkg">${makeOptions('Other')}</select></div><div><label>Other quantity</label><input name="otherPackagingQty" class="qty" type="number" min="0" step="1" value="0"></div></div><div class="summary">Calculated packaging cost: <span id="pkgCost">$0.00</span></div></div>
   <div class="grid"><div><label>Buyer</label><input name="buyer"></div><div><label>Tracking number</label><input name="trackingNumber"></div></div><label>Notes</label><textarea name="notes" rows="3"></textarea>
   <div class="actions"><button id="saveBtn" type="button" onclick="submitSale()">Accept Sale</button><button id="cancelBtn" class="cancel" type="button" onclick="cancelSale()">Cancel</button></div><div id="status" class="status"></div></form><script>
   const form=document.getElementById('f'),saveBtn=document.getElementById('saveBtn'),cancelBtn=document.getElementById('cancelBtn'),statusBox=document.getElementById('status');
@@ -76,7 +87,7 @@ function saleFormHtml3_(items,packages,marketplaces,selectedItemId) {
     if(value('salePrice')==='')return 'Enter the sale price.';
     if(Number(value('salePrice'))<0)return 'Sale price cannot be negative.';
     const pairs=[['boxId','boxQty','box'],['bubbleId','bubbleQty','bubble wrap'],['mailerId','mailerQty','mailer'],['tapeId','tapeQty','tape'],['otherPackagingId','otherPackagingQty','other packaging']];
-    for(const [id,qty,label] of pairs){const selected=value(id),amount=Number(value(qty)||0);if(amount<0)return 'Packaging quantities cannot be negative.';if(amount>0&&!selected)return 'Select the '+label+' item used, or set its quantity to zero.';}
+    for(const [id,qty,label] of pairs){const selected=value(id),amount=Number(value(qty)||0);if(amount<0)return 'Packaging quantities cannot be negative.';if(!Number.isInteger(amount))return 'Packaging quantities must be whole numbers.';if(amount>0&&!selected)return 'Select the '+label+' item used, or set its quantity to zero.';}
     return '';
   }
   function submitSale(){
@@ -119,6 +130,14 @@ function marketplaceChoices3_() {
 function saveSale3(form) { return saveSale3_(form); }
 function cancelPendingSale3(itemId) { return cancelPendingSale3_(itemId); }
 
+
+function wholePackagingQty3_(value,label) {
+  const n=num3_(value);
+  if(n<0)throw new Error(label+' quantity cannot be negative.');
+  if(!Number.isInteger(n))throw new Error(label+' quantity must be a whole number.');
+  return n;
+}
+
 function saveSale3_(form) {
   const itemId=String(form&&form.itemId||'').trim();
   if(!itemId)throw new Error('Item ID is missing from the Complete Sale form.');
@@ -158,11 +177,11 @@ function saveSale3_(form) {
       'Total Selling Costs':sellingCosts,'Net Proceeds':netProceeds,'Realized Profit':realizedProfit,
       'Realized ROI %':roi,'Days to Sell':days,'Buyer':String(form.buyer||''),
       'Tracking Number':String(form.trackingNumber||''),'Notes':String(form.notes||''),'Created At':new Date(),
-      'Box Used':packagingIdFromSelection3_(form.boxId),'Box Qty':num3_(form.boxQty),
-      'Bubble Wrap Used':packagingIdFromSelection3_(form.bubbleId),'Bubble Wrap Qty':num3_(form.bubbleQty),
-      'Mailer Used':packagingIdFromSelection3_(form.mailerId),'Mailer Qty':num3_(form.mailerQty),
-      'Tape Used':packagingIdFromSelection3_(form.tapeId),'Tape Qty':num3_(form.tapeQty),
-      'Other Packaging Used':packagingIdFromSelection3_(form.otherPackagingId),'Other Packaging Qty':num3_(form.otherPackagingQty),
+      'Box Used':packagingIdFromSelection3_(form.boxId),'Box Qty':wholePackagingQty3_(form.boxQty,'Box'),
+      'Bubble Wrap Used':packagingIdFromSelection3_(form.bubbleId),'Bubble Wrap Qty':wholePackagingQty3_(form.bubbleQty,'Bubble Wrap'),
+      'Mailer Used':packagingIdFromSelection3_(form.mailerId),'Mailer Qty':wholePackagingQty3_(form.mailerQty,'Mailer'),
+      'Tape Used':packagingIdFromSelection3_(form.tapeId),'Tape Qty':wholePackagingQty3_(form.tapeQty,'Tape'),
+      'Other Packaging Used':packagingIdFromSelection3_(form.otherPackagingId),'Other Packaging Qty':wholePackagingQty3_(form.otherPackagingQty,'Other Packaging'),
       'Packaging Verified':'Yes'
     };
     const sales=sheet3_(FTP3.SHEETS.SALES);

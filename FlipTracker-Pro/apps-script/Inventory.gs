@@ -21,6 +21,7 @@ function buildInventorySprint3_() {
   ['Purchase Price','Tax Paid','Acquisition Shipping','Total Cost','Listed Price','Expected Sale Price','Projected Profit']
     .forEach(name=>s.getRange(2,c[name],FTP3.ROWS,1).setNumberFormat('$#,##0.00;[Red]-$#,##0.00'));
   s.getRange(2,c['Projected ROI %'],FTP3.ROWS,1).setNumberFormat('0.0%;[Red]-0.0%');
+  s.getRange(2,c['Days in Inventory'],FTP3.ROWS,1).setNumberFormat('0');
 
   // Calculated fields are maintained by a header-based recalculation routine.
   repairInventoryCalculations3_(s);
@@ -107,7 +108,7 @@ function recalculateInventoryRow3_(sheet,row) {
   if(purchaseDate instanceof Date&&!isNaN(purchaseDate))days=Math.max(0,Math.floor((new Date()-purchaseDate)/86400000));
   s.getRange(row,c['Quantity']).setValue(quantity);
   s.getRange(row,c['Total Cost']).setValue(total).setNumberFormat('$#,##0.00;[Red]-$#,##0.00');
-  s.getRange(row,c['Days in Inventory']).setValue(days);
+  s.getRange(row,c['Days in Inventory']).setValue(days).setNumberFormat('0');
   s.getRange(row,c['Projected Profit']).setValue(profit).setNumberFormat('$#,##0.00;[Red]-$#,##0.00');
   s.getRange(row,c['Projected ROI %']).setValue(roi).setNumberFormat('0.0%;[Red]-0.0%');
 }

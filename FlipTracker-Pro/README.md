@@ -1,21 +1,15 @@
-# FlipTracker Pro v0.5.4
+# FlipTracker Pro v0.5.5
 
-## Updated Inventory order
+This release fixes Complete Sale packaging quantities and the Inventory Days in Inventory display.
 
-Item ID, Description, Category, Condition, SKU, Barcode, Quantity,
-Purchase Date, Purchase Location, Purchase Price, Tax Paid,
-Acquisition Shipping, Total Cost, Status, Marketplace, Listing Date,
-Storage Location, Listed Price, Expected Sale Price, Days in Inventory,
-Projected Profit, Projected ROI %, Created At, Updated At, Notes,
-Photo Link, Receipt Link.
+## Packaging quantities
 
-## Formula logic
+Box, bubble wrap, mailer, tape, and other packaging quantities accept whole numbers only. The Sales sheet stores and displays them with no decimal places.
 
-Total Cost = Purchase Price × Quantity + Tax Paid + Acquisition Shipping.
+## Days in Inventory
 
-All active Inventory-dependent calculations use header-name mappings rather than fixed column numbers.
+Days in Inventory is stored and displayed as an integer, not as a date.
 
 ## Upgrade
 
-Replace the Apps Script files, run `upgradeFlipTrackerPro()`, reload the spreadsheet,
-and run **FlipTracker Pro → Repair Inventory Calculations**.
+Replace all Apps Script files, run `upgradeFlipTrackerPro()`, and reload the spreadsheet.
