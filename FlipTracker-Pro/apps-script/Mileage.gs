@@ -27,10 +27,12 @@ function showRecordMileageForm() {
   document.querySelector('[name="date"]').value=new Date().toISOString().slice(0,10);
   document.getElementById('f').addEventListener('submit',e=>{e.preventDefault();
   google.script.run.withSuccessHandler(()=>google.script.host.close()).withFailureHandler(x=>alert(x.message))
-  .saveMileage3_(Object.fromEntries(new FormData(e.target).entries()));});</script></body></html>`)
+  .saveMileage3(Object.fromEntries(new FormData(e.target).entries()));});</script></body></html>`)
   .setWidth(520).setHeight(590);
   SpreadsheetApp.getUi().showModalDialog(html,'Record Mileage');
 }
+
+function saveMileage3(form) { return saveMileage3_(form); }
 
 function saveMileage3_(form) {
   if (!form.date || !form.purpose) throw new Error('Date and business purpose are required.');

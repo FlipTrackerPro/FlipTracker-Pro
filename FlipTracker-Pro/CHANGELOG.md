@@ -1,13 +1,12 @@
 # Changelog
 
-## v0.5.0 — Inventory Flow and Formula Audit
+## v0.5.1 — Complete Sale and Cost Fix
 
-- Reordered Inventory columns to follow identification → purchase → documentation → listing → performance → system fields.
-- Kept the column name **Purchase Price** unchanged.
-- Total Cost remains: Purchase Price × Quantity + Tax Paid + Acquisition Shipping.
-- Projected Profit now uses Listed Price when present, otherwise Expected Sale Price.
-- Automatically fills Listing Date when Status first changes to Listed.
-- Hid Created At and Updated At from normal Inventory entry.
-- Converted Inventory-dependent Sales, Dashboard, Tax Centre, and Audit logic to header-based lookups.
-- Added formula auditing for Total Cost, Projected Profit, Projected ROI, sales totals, packaging costing, expenses, and mileage.
-- Preserved existing data through header-name migration.
+- Fixed Complete Sale form saving by exposing public Apps Script endpoints to HTML forms.
+- Fixed the same private-function issue in Packaging, Expenses, and Mileage forms.
+- Box Used now displays and stores only the Packaging ID.
+- Shows box description, cost per unit, and available quantity separately beneath the Box Used field.
+- Validates that the selected Box Packaging ID is actually categorized as Box.
+- Packaging Cost is calculated from Packaging ID → Cost Per Unit × quantity.
+- Added live Total Cost calculation to the Inventory form.
+- Server-side Inventory Total Cost remains Purchase Price × Quantity + Tax Paid + Acquisition Shipping.

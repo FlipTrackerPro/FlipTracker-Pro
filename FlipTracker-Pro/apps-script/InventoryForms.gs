@@ -26,6 +26,7 @@ function inventoryFormHtml3_(existing){
   <div><label>Purchase price</label><input type="number" step="0.01" min="0" name="purchasePrice"></div>
   <div><label>Tax paid</label><input type="number" step="0.01" min="0" name="taxPaid"></div>
   <div><label>Acquisition shipping</label><input type="number" step="0.01" min="0" name="acquisitionShipping"></div>
+  <div><label>Total cost</label><input name="totalCostDisplay" readonly value="$0.00"></div>
   <div><label>Storage location</label><input name="storageLocation"></div>
   <div><label>Status</label><input name="status" value="Purchased"></div>
   <div><label>Marketplace</label><input name="marketplace"></div>
@@ -43,6 +44,15 @@ function inventoryFormHtml3_(existing){
   storageLocation:r['Storage Location'],status:r['Status'],marketplace:r['Marketplace'],listedPrice:r['Listed Price'],
   expectedSalePrice:r['Expected Sale Price'],receiptLink:r['Receipt Link'],photoLink:r['Photo Link'],notes:r['Notes']};
   Object.keys(m).forEach(k=>{const e=document.querySelector('[name="'+k+'"]');if(e)e.value=m[k]??'';});}
+  function calculateTotalCost(){
+    const quantity=Math.max(1,Number(document.querySelector('[name="quantity"]').value)||1);
+    const purchasePrice=Number(document.querySelector('[name="purchasePrice"]').value)||0;
+    const taxPaid=Number(document.querySelector('[name="taxPaid"]').value)||0;
+    const acquisitionShipping=Number(document.querySelector('[name="acquisitionShipping"]').value)||0;
+    document.querySelector('[name="totalCostDisplay"]').value='$'+(purchasePrice*quantity+taxPaid+acquisitionShipping).toFixed(2);
+  }
+  ['quantity','purchasePrice','taxPaid','acquisitionShipping'].forEach(name=>document.querySelector('[name="'+name+'"]').addEventListener('input',calculateTotalCost));
+  calculateTotalCost();
   document.getElementById('f').addEventListener('submit',e=>{e.preventDefault();google.script.run
   .withSuccessHandler(()=>google.script.host.close()).withFailureHandler(x=>alert(x.message))
   .saveInventoryItem(Object.fromEntries(new FormData(e.target).entries()));});</script></body></html>`;

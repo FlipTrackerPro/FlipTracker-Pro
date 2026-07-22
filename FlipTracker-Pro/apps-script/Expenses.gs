@@ -32,10 +32,12 @@ function showRecordExpenseForm() {
   document.querySelector('[name="date"]').value=new Date().toISOString().slice(0,10);
   document.getElementById('f').addEventListener('submit',e=>{e.preventDefault();
   google.script.run.withSuccessHandler(()=>google.script.host.close()).withFailureHandler(x=>alert(x.message))
-  .saveExpense3_(Object.fromEntries(new FormData(e.target).entries()));});</script></body></html>`)
+  .saveExpense3(Object.fromEntries(new FormData(e.target).entries()));});</script></body></html>`)
   .setWidth(520).setHeight(640);
   SpreadsheetApp.getUi().showModalDialog(html,'Record Expense');
 }
+
+function saveExpense3(form) { return saveExpense3_(form); }
 
 function saveExpense3_(form) {
   if (!form.date || !form.category || !form.description) throw new Error('Date, category, and description are required.');

@@ -57,9 +57,11 @@ function showPackagingForm() {
   <button type="submit">Add Supply</button></form><script>
   document.getElementById('f').addEventListener('submit',e=>{e.preventDefault();
   google.script.run.withSuccessHandler(()=>google.script.host.close()).withFailureHandler(x=>alert(x.message))
-  .savePackaging3_(Object.fromEntries(new FormData(e.target).entries()));});</script></body></html>`).setWidth(560).setHeight(680);
+  .savePackaging3(Object.fromEntries(new FormData(e.target).entries()));});</script></body></html>`).setWidth(560).setHeight(680);
   SpreadsheetApp.getUi().showModalDialog(html,'Add Packaging Supply');
 }
+
+function savePackaging3(form) { return savePackaging3_(form); }
 
 function savePackaging3_(form) {
   const units=num3_(form.unitsPurchased); const purchaseCost=num3_(form.purchaseCost);
@@ -87,7 +89,23 @@ function packagingItemById3_(id) {
 function calculatePackagingUsage3_(form) {
   const specs=[['boxId','boxQty','Box'],['bubbleId','bubbleQty','Bubble Wrap'],['mailerId','mailerQty','Mailer'],['tapeId','tapeQty','Tape'],['otherPackagingId','otherPackagingQty','Other']];
   const usage=[];let total=0;
-  specs.forEach(([idKey,qtyKey,label])=>{const selection=String(form[idKey]||'').trim();const id=packagingIdFromSelection3_(selection);const qty=num3_(form[qtyKey]);if(!id&&qty>0)throw new Error(label+' quantity was entered without selecting an item.');if(!id)return;if(qty<=0)throw new Error(label+' quantity must be greater than zero.');const item=packagingItemById3_(id);if(!item)throw new Error(label+' packaging item was not found: '+id);const available=num3_(item.values[8]);if(qty>available+0.000001)throw new Error(label+' quantity exceeds stock. Available: '+available+' '+String(item.values[4]||'units'));const cost=num3_(item.values[7])*qty;usage.push({id:id,qty:qty,row:item.row,cost:cost});total+=cost;});
+  specs.forEach(([idKey,qtyKey,expectedCategory])=>{
+    const id=packagingIdFromSelection3_(String(form[idKey]||'').trim());
+    const qty=num3_(form[qtyKey]);
+    if(!id&&qty>0)throw new Error(expectedCategory+' quantity was entered without selecting a Packaging ID.');
+    if(!id)return;
+    if(qty<=0)throw new Error(expectedCategory+' quantity must be greater than zero.');
+    const item=packagingItemById3_(id);
+    if(!item)throw new Error(expectedCategory+' Packaging ID was not found: '+id);
+    const record=rowRecord3_(FTP3.PACKAGING_HEADERS,item.values);
+    const actualCategory=packagingCategoryKey3_(record['Category']);
+    if(expectedCategory!=='Other'&&actualCategory!==expectedCategory)throw new Error(id+' is categorized as '+actualCategory+', not '+expectedCategory+'.');
+    if(expectedCategory==='Other'&&actualCategory!=='Other')throw new Error(id+' belongs in the '+actualCategory+' field, not Other Packaging.');
+    const available=num3_(record['Quantity On Hand']);
+    if(qty>available+0.000001)throw new Error(expectedCategory+' quantity exceeds stock. Available: '+available+' '+String(record['Unit of Measure']||'units'));
+    const cost=num3_(record['Cost Per Unit'])*qty;
+    usage.push({id:id,qty:qty,row:item.row,cost:cost});total+=cost;
+  });
   return{usage:usage,total:Math.round(total*100)/100};
 }
 
