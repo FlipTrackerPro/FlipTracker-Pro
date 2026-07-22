@@ -53,14 +53,45 @@ function showRecordSaleFormForItem3_(itemId) {
   SpreadsheetApp.getUi().showModalDialog(html,itemId?'Complete Sale':'Record Sale');
 }
 function saleFormHtml3_(items,packages,selectedItemId) {
-  const itemOptions=items.map(x=>`<option value="${x.id}" ${x.id===selectedItemId?'selected':''}>${x.label}</option>`).join('');
-  const makeOptions=(category)=>'<option value="">None</option>'+packages.filter(x=>category==='Other'||x.category.toLowerCase().indexOf(category.toLowerCase())>=0).map(x=>`<option value="${x.id}" data-cost="${x.cost}" data-stock="${x.available}" data-unit="${x.unit}">${x.label} — ${x.available} ${x.unit} @ $${x.cost.toFixed(3)}</option>`).join('');
-  return `<!doctype html><html><head><base target="_top"><style>body{font-family:Arial;padding:14px;color:#1F2937}label{display:block;font-weight:700;margin-top:8px}input,select,textarea{width:100%;box-sizing:border-box;padding:8px;margin-top:3px;border:1px solid #B7C9D6;border-radius:4px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.section{margin-top:14px;padding:10px;background:#F3F6F9;border-radius:6px}.summary{font-weight:700;margin-top:10px}button{margin-top:16px;padding:10px 16px;border:0;border-radius:4px;background:#1F4E78;color:#fff;font-weight:700}</style></head><body><form id="f">
+  const esc=v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  const itemOptions=items.map(x=>`<option value="${esc(x.id)}" ${x.id===selectedItemId?'selected':''}>${esc(x.label)}</option>`).join('');
+  const makeOptions=(category)=>'<option value="">None</option>'+packages.filter(x=>category==='Other'||x.category.toLowerCase().indexOf(category.toLowerCase())>=0).map(x=>`<option value="${esc(x.id)}" data-cost="${Number(x.cost)||0}" data-stock="${Number(x.available)||0}" data-unit="${esc(x.unit)}">${esc(x.label)} — ${Number(x.available)||0} ${esc(x.unit)} @ $${(Number(x.cost)||0).toFixed(3)}</option>`).join('');
+  return `<!doctype html><html><head><base target="_top"><style>
+  body{font-family:Arial;padding:14px;color:#1F2937}label{display:block;font-weight:700;margin-top:8px}input,select,textarea{width:100%;box-sizing:border-box;padding:8px;margin-top:3px;border:1px solid #B7C9D6;border-radius:4px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.section{margin-top:14px;padding:10px;background:#F3F6F9;border-radius:6px}.summary{font-weight:700;margin-top:10px}.actions{display:flex;align-items:center;gap:8px;margin-top:16px}.actions button{padding:10px 16px;border:0;border-radius:4px;background:#1F4E78;color:#fff;font-weight:700;cursor:pointer}.actions button:disabled{opacity:.55;cursor:not-allowed}.actions .cancel{background:#6B7280}.status{margin-top:10px;min-height:20px;font-weight:700}.error{color:#B91C1C}.success{color:#166534}</style></head><body><form id="f" novalidate>
   <label>Inventory item</label><select name="itemId" required>${itemOptions}</select><div class="grid"><div><label>Sale date</label><input type="date" name="saleDate" required></div><div><label>Marketplace</label><input name="marketplace" required></div><div><label>Sale price</label><input type="number" step="0.01" min="0" name="salePrice" required></div><div><label>Shipping charged</label><input type="number" step="0.01" min="0" name="shippingCharged"></div><div><label>Shipping actual</label><input type="number" step="0.01" min="0" name="shippingActual"></div><div><label>Marketplace fees</label><input type="number" step="0.01" min="0" name="marketplaceFees"></div><div><label>Payment fees</label><input type="number" step="0.01" min="0" name="paymentFees"></div><div><label>Promotion expense</label><input type="number" step="0.01" min="0" name="promotionExpense"></div><div><label>GST/HST collected</label><input type="number" step="0.01" min="0" name="taxCollected"></div></div>
   <div class="section"><b>Packaging used</b><div class="grid"><div><label>Box used</label><select name="boxId" class="pkg">${makeOptions('Box')}</select></div><div><label>Box quantity</label><input name="boxQty" class="qty" type="number" min="0" step="0.001" value="0"></div><div><label>Bubble wrap used</label><select name="bubbleId" class="pkg">${makeOptions('Bubble')}</select></div><div><label>Bubble wrap quantity</label><input name="bubbleQty" class="qty" type="number" min="0" step="0.001" value="0"></div><div><label>Mailer used</label><select name="mailerId" class="pkg">${makeOptions('Mailer')}</select></div><div><label>Mailer quantity</label><input name="mailerQty" class="qty" type="number" min="0" step="0.001" value="0"></div><div><label>Tape used</label><select name="tapeId" class="pkg">${makeOptions('Tape')}</select></div><div><label>Tape quantity</label><input name="tapeQty" class="qty" type="number" min="0" step="0.001" value="0"></div><div><label>Other packaging</label><select name="otherPackagingId" class="pkg">${makeOptions('Other')}</select></div><div><label>Other quantity</label><input name="otherPackagingQty" class="qty" type="number" min="0" step="0.001" value="0"></div></div><div class="summary">Calculated packaging cost: <span id="pkgCost">$0.00</span></div></div>
-  <div class="grid"><div><label>Buyer</label><input name="buyer"></div><div><label>Tracking number</label><input name="trackingNumber"></div></div><label>Notes</label><textarea name="notes" rows="3"></textarea><button type="submit">Record Sale</button><button type="button" style="background:#6B7280;margin-left:8px" onclick="cancelSale()">Cancel</button></form><script>
-  document.querySelector('[name="saleDate"]').value=new Date().toISOString().slice(0,10);function cancelSale(){const id=document.querySelector('[name="itemId"]').value;google.script.run.withSuccessHandler(()=>google.script.host.close()).cancelPendingSale3_(id);}function calc(){let total=0;[['boxId','boxQty'],['bubbleId','bubbleQty'],['mailerId','mailerQty'],['tapeId','tapeQty'],['otherPackagingId','otherPackagingQty']].forEach(([s,q])=>{const sel=document.querySelector('[name="'+s+'"]');const opt=sel.options[sel.selectedIndex];total+=(Number(opt.dataset.cost)||0)*(Number(document.querySelector('[name="'+q+'"]').value)||0);});document.getElementById('pkgCost').textContent='$'+total.toFixed(2);}document.querySelectorAll('.pkg,.qty').forEach(x=>x.addEventListener('input',calc));
-  document.getElementById('f').addEventListener('submit',e=>{e.preventDefault();google.script.run.withSuccessHandler(()=>google.script.host.close()).withFailureHandler(x=>alert(x.message)).saveSale3_(Object.fromEntries(new FormData(e.target).entries()));});</script></body></html>`;
+  <div class="grid"><div><label>Buyer</label><input name="buyer"></div><div><label>Tracking number</label><input name="trackingNumber"></div></div><label>Notes</label><textarea name="notes" rows="3"></textarea>
+  <div class="actions"><button id="saveBtn" type="button" onclick="submitSale()">Accept Sale</button><button id="cancelBtn" class="cancel" type="button" onclick="cancelSale()">Cancel</button></div><div id="status" class="status"></div></form><script>
+  const form=document.getElementById('f'),saveBtn=document.getElementById('saveBtn'),cancelBtn=document.getElementById('cancelBtn'),statusBox=document.getElementById('status');
+  document.querySelector('[name="saleDate"]').value=new Date().toISOString().slice(0,10);
+  function showStatus(message,isError){statusBox.textContent=message||'';statusBox.className='status '+(isError?'error':'success');}
+  function setBusy(busy){saveBtn.disabled=busy;cancelBtn.disabled=busy;saveBtn.textContent=busy?'Saving…':'Accept Sale';}
+  function value(name){const el=form.elements[name];return el?String(el.value||'').trim():'';}
+  function formDataObject(){const data={};Array.from(form.elements).forEach(el=>{if(el.name)data[el.name]=el.value;});return data;}
+  function validate(){
+    if(!value('itemId'))return 'Select an inventory item.';
+    if(!value('saleDate'))return 'Enter the sale date.';
+    if(!value('marketplace'))return 'Enter the marketplace.';
+    if(value('salePrice')==='')return 'Enter the sale price.';
+    if(Number(value('salePrice'))<0)return 'Sale price cannot be negative.';
+    const pairs=[['boxId','boxQty','box'],['bubbleId','bubbleQty','bubble wrap'],['mailerId','mailerQty','mailer'],['tapeId','tapeQty','tape'],['otherPackagingId','otherPackagingQty','other packaging']];
+    for(const [id,qty,label] of pairs){const selected=value(id),amount=Number(value(qty)||0);if(amount<0)return 'Packaging quantities cannot be negative.';if(amount>0&&!selected)return 'Select the '+label+' item used, or set its quantity to zero.';}
+    return '';
+  }
+  function submitSale(){
+    showStatus('',false);const problem=validate();if(problem){showStatus(problem,true);return;}
+    setBusy(true);showStatus('Saving sale…',false);
+    google.script.run
+      .withSuccessHandler(result=>{showStatus((result&&result.message)||'Sale saved successfully.',false);setTimeout(()=>google.script.host.close(),500);})
+      .withFailureHandler(error=>{setBusy(false);const message=error&&error.message?error.message:String(error||'The sale could not be saved.');showStatus(message,true);})
+      .saveSale3_(formDataObject());
+  }
+  function cancelSale(){setBusy(true);const id=value('itemId');google.script.run.withSuccessHandler(()=>google.script.host.close()).withFailureHandler(error=>{setBusy(false);showStatus(error&&error.message?error.message:String(error),true);}).cancelPendingSale3_(id);}
+  function calc(){let total=0;[['boxId','boxQty'],['bubbleId','bubbleQty'],['mailerId','mailerQty'],['tapeId','tapeQty'],['otherPackagingId','otherPackagingQty']].forEach(([s,q])=>{const sel=form.elements[s],opt=sel.options[sel.selectedIndex];total+=(Number(opt&&opt.dataset.cost)||0)*(Number(form.elements[q].value)||0);});document.getElementById('pkgCost').textContent='$'+total.toFixed(2);}
+  document.querySelectorAll('.pkg,.qty').forEach(x=>{x.addEventListener('input',calc);x.addEventListener('change',calc);});
+  form.addEventListener('submit',e=>{e.preventDefault();submitSale();});
+  calc();
+  </script></body></html>`;
 }
 
 function saveSale3_(form) {
@@ -75,6 +106,7 @@ function saveSale3_(form) {
     const sales=sheet3_(FTP3.SHEETS.SALES),row=Math.max(sales.getLastRow()+1,2);sales.getRange(row,1,1,values.length).setValues([values]);
     try{deductPackagingUsage3_(pkg.usage);}catch(err){sales.deleteRow(row);throw err;}
     const inventory=sheet3_(FTP3.SHEETS.INVENTORY);inventory.getRange(item.row,19).setValue('Sold').clearNote();inventory.getRange(item.row,27).setValue(new Date());PropertiesService.getDocumentProperties().deleteProperty('FTP_PREV_STATUS_'+form.itemId);refreshDashboardSprint3();
+    return {ok:true,message:'Sale '+values[0]+' saved successfully.'};
   }finally{lock.releaseLock();}
 }
 

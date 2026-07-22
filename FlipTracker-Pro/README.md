@@ -1,16 +1,7 @@
-# FlipTracker Pro v0.4.5
+# FlipTracker Pro v0.4.6
 
-## Reliable automatic sale workflow
+This release fixes the Sales form Accept Sale button.
 
-Google Apps Script edit triggers cannot reliably display an HTML modal dialog.
-For that reason, v0.4.5 uses a dependable two-step workflow:
+After replacing the Apps Script files, run `upgradeFlipTrackerPro()`, reload the spreadsheet, select a Sale Pending inventory row, and use **FlipTracker Pro → Complete Selected Pending Sale**.
 
-1. On the Inventory sheet, change the Status to **Sold**.
-2. FlipTracker Pro changes it to **Sale Pending**, highlights the row, and shows a reminder.
-3. Keep the row selected and choose:
-   **FlipTracker Pro → Complete Selected Pending Sale**
-4. The Record Sale form opens with the Inventory item preselected.
-5. Saving the form creates the Sales record, deducts packaging, calculates profit,
-   and changes the Inventory status to **Sold**.
-
-Run `upgradeFlipTrackerPro()` after replacing the Apps Script files.
+The form now displays validation and server errors directly rather than silently doing nothing.
