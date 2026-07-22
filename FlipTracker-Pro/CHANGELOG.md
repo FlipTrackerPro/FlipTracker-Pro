@@ -1,12 +1,9 @@
 # Changelog
 
-## v0.5.1 — Complete Sale and Cost Fix
+## v0.5.3 — Inventory Cost Recalculation Fix
 
-- Fixed Complete Sale form saving by exposing public Apps Script endpoints to HTML forms.
-- Fixed the same private-function issue in Packaging, Expenses, and Mileage forms.
-- Box Used now displays and stores only the Packaging ID.
-- Shows box description, cost per unit, and available quantity separately beneath the Box Used field.
-- Validates that the selected Box Packaging ID is actually categorized as Box.
-- Packaging Cost is calculated from Packaging ID → Cost Per Unit × quantity.
-- Added live Total Cost calculation to the Inventory form.
-- Server-side Inventory Total Cost remains Purchase Price × Quantity + Tax Paid + Acquisition Shipping.
+- Fixed malformed row-level Inventory formulas.
+- Replaced fragile formulas with header-based recalculation on edits and saves.
+- Total Cost now recalculates from Purchase Price × Quantity + Tax Paid + Acquisition Shipping.
+- Added Repair Inventory Calculations menu action.
+- Upgrade forcibly clears stale validation and recalculates all existing Inventory rows.

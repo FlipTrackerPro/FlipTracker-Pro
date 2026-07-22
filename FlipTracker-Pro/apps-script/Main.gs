@@ -3,9 +3,12 @@ function installFlipTrackerPro() {
   buildSalesSprint3_(); buildExpensesSprint3_(); buildMileageSprint3_();
   buildPackagingSprint3_(); buildDashboardSprint3_(); buildTaxCentreV04_();
   const p=PropertiesService.getDocumentProperties();
-  p.setProperty('FTP_SCHEMA_VERSION','5.1'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
+  buildInventorySprint3_(); // Always repair validation and calculated columns.
+  buildInventorySprint3_();
+  repairInventoryCalculations3_();
+  p.setProperty('FTP_SCHEMA_VERSION','5.3'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
   goToDashboardSprint3();
-  SpreadsheetApp.getActive().toast('FlipTracker Pro v0.5.1 is ready.','FlipTracker Pro',6);
+  SpreadsheetApp.getActive().toast('FlipTracker Pro v0.5.3 is ready.','FlipTracker Pro',6);
 }
 
 function upgradeFlipTrackerPro() {
@@ -26,8 +29,12 @@ function upgradeFlipTrackerPro() {
   if(current<4.9) migrateToSchema49_();
   if(current<5.0) migrateToSchema50_();
   if(current<5.1) migrateToSchema51_();
-  p.setProperty('FTP_SCHEMA_VERSION','5.1'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
-  SpreadsheetApp.getActive().toast('FlipTracker Pro upgraded to schema 5.1.','FlipTracker Pro',6);
+  if(current<5.2) migrateToSchema52_();
+  if(current<5.3) migrateToSchema53_();
+  buildInventorySprint3_();
+  repairInventoryCalculations3_();
+  p.setProperty('FTP_SCHEMA_VERSION','5.3'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
+  SpreadsheetApp.getActive().toast('FlipTracker Pro upgraded to schema 5.3.','FlipTracker Pro',6);
 }
 function migrateToSchema1_(){buildAdminSprint3_();buildSettingsSprint3_();buildInventorySprint3_();}
 function migrateToSchema2_(){buildInventorySprint3_();}
@@ -61,4 +68,6 @@ function populateSalesDescriptions48_(){
 function migrateToSchema49_(){buildInventorySprint3_();buildSalesSprint3_();refreshPackagingDropdowns3_();}
 function migrateToSchema50_(){buildInventorySprint3_();buildSalesSprint3_();buildDashboardSprint3_();buildTaxCentreV04_();refreshPackagingDropdowns3_();}
 function migrateToSchema51_(){buildInventorySprint3_();buildSalesSprint3_();refreshPackagingDropdowns3_();}
+function migrateToSchema52_(){buildInventorySprint3_();buildSalesSprint3_();buildDashboardSprint3_();refreshPackagingDropdowns3_();}
+function migrateToSchema53_(){buildInventorySprint3_();repairInventoryCalculations3_();buildDashboardSprint3_();}
 function getFlipTrackerVersion(){const p=PropertiesService.getDocumentProperties();return{appVersion:p.getProperty('FTP_APP_VERSION')||FTP3.VERSION,schemaVersion:p.getProperty('FTP_SCHEMA_VERSION')||'unversioned'};}

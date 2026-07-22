@@ -180,6 +180,9 @@ function onEdit(e) {
   }
   if(sheet.getName()!==FTP3.SHEETS.INVENTORY||e.range.getRow()<2)return;
   const map=headerMap3_(sheet), row=e.range.getRow();
+  const recalculationHeaders=['Description','Quantity','Purchase Date','Purchase Price','Tax Paid','Acquisition Shipping','Listed Price','Expected Sale Price'];
+  const recalculationColumns=recalculationHeaders.map(h=>map[h]);
+  if(recalculationColumns.indexOf(e.range.getColumn())>=0)recalculateInventoryRow3_(sheet,row);
   if(e.range.getColumn()===map['Status']){
     const value=String(e.value||'');
     if(value==='Listed'&&!sheet.getRange(row,map['Listing Date']).getValue()){

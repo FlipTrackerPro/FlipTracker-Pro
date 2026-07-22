@@ -26,7 +26,7 @@ function inventoryFormHtml3_(existing){
   <div><label>Purchase price</label><input type="number" step="0.01" min="0" name="purchasePrice"></div>
   <div><label>Tax paid</label><input type="number" step="0.01" min="0" name="taxPaid"></div>
   <div><label>Acquisition shipping</label><input type="number" step="0.01" min="0" name="acquisitionShipping"></div>
-  <div><label>Total cost</label><input name="totalCostDisplay" readonly value="$0.00"></div>
+  <div><label>Total cost</label><input name="totalCostDisplay" readonly value="0.00"></div>
   <div><label>Storage location</label><input name="storageLocation"></div>
   <div><label>Status</label><input name="status" value="Purchased"></div>
   <div><label>Marketplace</label><input name="marketplace"></div>
@@ -49,7 +49,7 @@ function inventoryFormHtml3_(existing){
     const purchasePrice=Number(document.querySelector('[name="purchasePrice"]').value)||0;
     const taxPaid=Number(document.querySelector('[name="taxPaid"]').value)||0;
     const acquisitionShipping=Number(document.querySelector('[name="acquisitionShipping"]').value)||0;
-    document.querySelector('[name="totalCostDisplay"]').value='$'+(purchasePrice*quantity+taxPaid+acquisitionShipping).toFixed(2);
+    document.querySelector('[name="totalCostDisplay"]').value=(purchasePrice*quantity+taxPaid+acquisitionShipping).toFixed(2);
   }
   ['quantity','purchasePrice','taxPaid','acquisitionShipping'].forEach(name=>document.querySelector('[name="'+name+'"]').addEventListener('input',calculateTotalCost));
   calculateTotalCost();
