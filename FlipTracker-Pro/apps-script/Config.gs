@@ -1,6 +1,6 @@
 const FTP3 = {
   APP_NAME: 'FlipTracker Pro',
-  VERSION: '0.7.0',
+  VERSION: '0.7.1',
   ROWS: 1000,
   SHEETS: {
     DASHBOARD:'Dashboard', INVENTORY:'Inventory', SALES:'Sales',
@@ -18,7 +18,7 @@ const FTP3 = {
     'Purchase Date','Purchase Location','Purchase Price','Tax Paid',
     'Acquisition Shipping','Total Cost','Status','Marketplace','Listing Date',
     'Storage Location','Listed Price','Expected Sale Price','Days in Inventory',
-    'Projected Profit','Projected ROI %','Created At','Updated At','Notes',
+    'Inventory Health','Projected Profit','Projected ROI %','Created At','Updated At','Notes',
     'Photo Link','Receipt Link'
   ],
   SALES_HEADERS: [
