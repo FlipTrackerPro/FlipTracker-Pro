@@ -10,12 +10,12 @@ function runFlipTrackerCalculationAudit() {
   });
   const saleRows=sales.getLastRow()>1?sales.getRange(2,1,sales.getLastRow()-1,FTP3.SALES_HEADERS.length).getValues():[];
   saleRows.forEach((r,i)=>{if(!r[0])return;
-    const gross=num3_(r[4])+num3_(r[5]); const costs=num3_(r[6])+num3_(r[7])+num3_(r[8])+num3_(r[9])+num3_(r[10]);
-    const net=gross-costs, profit=net-num3_(r[12]);
-    if(Math.abs(num3_(r[13])-gross)>0.01)add('CRITICAL','Sales',i+2,'Gross Revenue is inconsistent.');
-    if(Math.abs(num3_(r[14])-costs)>0.01)add('CRITICAL','Sales',i+2,'Total Selling Costs incorrectly includes or omits a cost.');
-    if(Math.abs(num3_(r[15])-net)>0.01)add('CRITICAL','Sales',i+2,'Net Proceeds is inconsistent.');
-    if(Math.abs(num3_(r[16])-profit)>0.01)add('CRITICAL','Sales',i+2,'Realized Profit is inconsistent.');
+    const gross=num3_(r[5])+num3_(r[6]); const costs=num3_(r[7])+num3_(r[8])+num3_(r[9])+num3_(r[10])+num3_(r[11]);
+    const net=gross-costs, profit=net-num3_(r[13]);
+    if(Math.abs(num3_(r[14])-gross)>0.01)add('CRITICAL','Sales',i+2,'Gross Revenue is inconsistent.');
+    if(Math.abs(num3_(r[15])-costs)>0.01)add('CRITICAL','Sales',i+2,'Total Selling Costs incorrectly includes or omits a cost.');
+    if(Math.abs(num3_(r[16])-net)>0.01)add('CRITICAL','Sales',i+2,'Net Proceeds is inconsistent.');
+    if(Math.abs(num3_(r[17])-profit)>0.01)add('CRITICAL','Sales',i+2,'Realized Profit is inconsistent.');
   });
   const expRows=exp.getLastRow()>1?exp.getRange(2,1,exp.getLastRow()-1,FTP3.EXPENSE_HEADERS.length).getValues():[];
   expRows.forEach((r,i)=>{if(!r[0])return;const total=num3_(r[5])+num3_(r[6]);const ded=total*Math.min(1,Math.max(0,num3_(r[8])));
@@ -33,7 +33,7 @@ function runFlipTrackerCalculationAudit() {
     if(Math.abs(num3_(r[7])-cpu)>0.001)add('MEDIUM','Packaging',i+2,'Cost Per Unit is inconsistent.');
     if(num3_(r[8])<-0.000001)add('CRITICAL','Packaging',i+2,'Quantity On Hand is negative.');
   });
-  saleRows.forEach((r,i)=>{if(!r[0])return;const refs=[[r[23],r[24]],[r[25],r[26]],[r[27],r[28]],[r[29],r[30]],[r[31],r[32]]];let calculated=0;refs.forEach(([id,qty])=>{if(!id)return;const item=packagingItemById3_(String(id));if(!item)add('HIGH','Sales',i+2,'A packaging item referenced by this sale no longer exists: '+id);else calculated+=num3_(item.values[7])*num3_(qty);});if(String(r[33]||'')==='Yes'&&Math.abs(num3_(r[7])-calculated)>0.011)add('HIGH','Sales',i+2,'Stored Packaging Cost does not match current referenced unit costs. Historical costs may have changed.');});
+  saleRows.forEach((r,i)=>{if(!r[0])return;const refs=[[r[24],r[25]],[r[26],r[27]],[r[28],r[29]],[r[30],r[31]],[r[32],r[33]]];let calculated=0;refs.forEach(([id,qty])=>{if(!id)return;const item=packagingItemById3_(String(id));if(!item)add('HIGH','Sales',i+2,'A packaging item referenced by this sale no longer exists: '+id);else calculated+=num3_(item.values[7])*num3_(qty);});if(String(r[34]||'')==='Yes'&&Math.abs(num3_(r[8])-calculated)>0.011)add('HIGH','Sales',i+2,'Stored Packaging Cost does not match current referenced unit costs. Historical costs may have changed.');});
   const q=sheet3_('Calculation Audit');q.clear();q.getRange(1,1,1,4).setValues([['Severity','Area','Row','Finding']]);header3_(q.getRange(1,1,1,4));
   if(issues.length)q.getRange(2,1,issues.length,4).setValues(issues);else q.getRange(2,1).setValue('PASS — no row-level calculation inconsistencies detected.');
   q.setFrozenRows(1);q.setColumnWidth(1,100);q.setColumnWidth(2,120);q.setColumnWidth(3,70);q.setColumnWidth(4,520);q.getRange('A:D').setWrap(true);

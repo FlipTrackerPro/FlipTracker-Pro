@@ -1,18 +1,19 @@
-# FlipTracker Pro v0.4.7
+# FlipTracker Pro v0.4.8
 
-## Fixed sale saving
+## Corrected sale data model
 
-The sale is now written and finalized without rebuilding the full Dashboard while
-the document lock is held. This prevents the form remaining stuck on **Saving…**.
+Inventory and Sales now use matching fields:
 
-If a response takes longer than 20 seconds, the form displays a warning. Check the
-Sales sheet before retrying because a slow connection may have completed the save.
+- **Item ID**
+- **Description**
 
-## Marketplace dropdown
-
-Marketplace values are taken from the **Marketplaces** column on the Admin sheet.
-Edit that list to control the choices displayed in the Record Sale form.
+On the Complete Sale form, the Item ID dropdown contains only Inventory Item IDs.
+The Description appears in its own read-only field and is copied from Inventory when
+the sale is saved.
 
 ## Upgrade
 
 Replace the Apps Script files, run `upgradeFlipTrackerPro()`, and reload the spreadsheet.
+
+The upgrade preserves existing Inventory data by moving **Title** into **Description**.
+It also fills the new Sales Description column by matching existing Sales Item IDs to Inventory.

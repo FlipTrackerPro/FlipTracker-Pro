@@ -3,7 +3,7 @@ function installFlipTrackerPro() {
   buildSalesSprint3_(); buildExpensesSprint3_(); buildMileageSprint3_();
   buildPackagingSprint3_(); buildDashboardSprint3_(); buildTaxCentreV04_();
   const p=PropertiesService.getDocumentProperties();
-  p.setProperty('FTP_SCHEMA_VERSION','4.7'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
+  p.setProperty('FTP_SCHEMA_VERSION','4.8'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
   goToDashboardSprint3();
   SpreadsheetApp.getActive().toast('FlipTracker Pro v0.4 is ready.','FlipTracker Pro',6);
 }
@@ -22,7 +22,8 @@ function upgradeFlipTrackerPro() {
   if(current<4.5) migrateToSchema45_();
   if(current<4.6) migrateToSchema46_();
   if(current<4.7) migrateToSchema47_();
-  p.setProperty('FTP_SCHEMA_VERSION','4.7'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
+  if(current<4.8) migrateToSchema48_();
+  p.setProperty('FTP_SCHEMA_VERSION','4.8'); p.setProperty('FTP_APP_VERSION',FTP3.VERSION);
   SpreadsheetApp.getActive().toast('FlipTracker Pro upgraded to schema 4.4.','FlipTracker Pro',6);
 }
 function migrateToSchema1_(){buildAdminSprint3_();buildSettingsSprint3_();buildInventorySprint3_();}
@@ -36,4 +37,22 @@ function migrateToSchema44_(){buildAdminSprint3_();buildInventorySprint3_();buil
 function migrateToSchema45_(){buildInventorySprint3_();buildSalesSprint3_();}
 function migrateToSchema46_(){buildSalesSprint3_();}
 function migrateToSchema47_(){buildAdminSprint3_();buildSalesSprint3_();}
+function migrateToSchema48_(){
+  buildInventorySprint3_();
+  buildSalesSprint3_();
+  populateSalesDescriptions48_();
+}
+function populateSalesDescriptions48_(){
+  const sales=sheet3_(FTP3.SHEETS.SALES);
+  if(sales.getLastRow()<2)return;
+  const inventory=sheet3_(FTP3.SHEETS.INVENTORY);
+  const map={};
+  if(inventory.getLastRow()>1){
+    inventory.getRange(2,1,inventory.getLastRow()-1,3).getDisplayValues()
+      .forEach(r=>{if(r[0])map[String(r[0])]=String(r[2]||'');});
+  }
+  const ids=sales.getRange(2,2,sales.getLastRow()-1,1).getDisplayValues();
+  const descriptions=ids.map(r=>[map[String(r[0])]||'']);
+  sales.getRange(2,3,descriptions.length,1).setValues(descriptions);
+}
 function getFlipTrackerVersion(){const p=PropertiesService.getDocumentProperties();return{appVersion:p.getProperty('FTP_APP_VERSION')||FTP3.VERSION,schemaVersion:p.getProperty('FTP_SCHEMA_VERSION')||'unversioned'};}

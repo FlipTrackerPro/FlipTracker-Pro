@@ -1,4 +1,5 @@
 function buildInventorySprint3_() {
+  migrateSheetHeaders3_(FTP3.SHEETS.INVENTORY,FTP3.INVENTORY_HEADERS,{'Description':['Title']});
   const s = sheet3_(FTP3.SHEETS.INVENTORY);
   const h = FTP3.INVENTORY_HEADERS;
   ensureSize3_(s,FTP3.ROWS+1,h.length);
@@ -44,7 +45,7 @@ function buildInventorySprint3_() {
 }
 
 function saveInventoryItem(form) {
-  if (!form.title || !form.purchaseDate) throw new Error('Purchase date and title are required.');
+  if (!form.description || !form.purchaseDate) throw new Error('Purchase date and description are required.');
   const s = sheet3_(FTP3.SHEETS.INVENTORY);
   const editing = Number(form.row) > 1;
   const row = editing ? Number(form.row) : Math.max(s.getLastRow()+1,2);
@@ -63,7 +64,7 @@ function saveInventoryItem(form) {
 
   const values = [
     editing ? old[0] : nextId3_(FTP3.SHEETS.INVENTORY,1,'ITM'),
-    purchaseDate,form.title,form.sku||'',form.barcode||'',form.category||'',
+    purchaseDate,form.description,form.sku||'',form.barcode||'',form.category||'',
     form.purchaseLocation||'',form.storageLocation||'',form.condition||'',
     quantity,purchasePrice,tax,shipping,total,expected,
     num3_(form.listedPrice),form.marketplace||'',old[17]||'',

@@ -76,7 +76,7 @@ function activeInventoryChoices3_() {
   if (s.getLastRow() < 2) return [];
   return s.getRange(2,1,s.getLastRow()-1,19).getDisplayValues()
     .filter(r => r[0] && r[2] && !['Sold','Archived'].includes(r[18]))
-    .map(r => ({id:r[0], label:r[0] + ' — ' + r[2]}));
+    .map(r => ({id:r[0], description:r[2] || ''}));
 }
 
 

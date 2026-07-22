@@ -80,22 +80,22 @@ function calculateTaxCentreV041_(year) {
   const mileage=milSheet.getLastRow()>1?milSheet.getRange(2,1,milSheet.getLastRow()-1,FTP3.MILEAGE_HEADERS.length).getValues():[];
   const inYear=d=>d instanceof Date && !isNaN(d) && d>=start && d<=end;
 
-  const yearSales=sales.filter(r=>r[0]&&inYear(r[2]));
-  const grossRevenue=yearSales.reduce((n,r)=>n+num3_(r[13]),0);
-  const taxCollected=yearSales.reduce((n,r)=>n+num3_(r[11]),0);
+  const yearSales=sales.filter(r=>r[0]&&inYear(r[3]));
+  const grossRevenue=yearSales.reduce((n,r)=>n+num3_(r[14]),0);
+  const taxCollected=yearSales.reduce((n,r)=>n+num3_(r[12]),0);
   const revenueExTax=grossRevenue; // Sales Gross Revenue deliberately excludes separately entered GST/HST.
   const inventoryById={}; inventory.filter(r=>r[0]).forEach(r=>inventoryById[String(r[0])]=r);
   const specificCogs=yearSales.reduce((n,r)=>{
     const source=inventoryById[String(r[1])];
     const recoverableTax=regular&&source?num3_(source[11]):0;
-    return n+Math.max(0,num3_(r[12])-recoverableTax);
+    return n+Math.max(0,num3_(r[13])-recoverableTax);
   },0);
   const yearPurchases=inventory.filter(r=>r[0]&&inYear(r[1]));
   const purchases=yearPurchases.reduce((n,r)=>n+Math.max(0,num3_(r[13])-(regular?num3_(r[11]):0)),0);
   const inventoryItc=regular?yearPurchases.reduce((n,r)=>n+num3_(r[11]),0):0;
 
   const soldByEnd={};
-  sales.filter(r=>r[0]&&r[1]&&r[2] instanceof Date&&!isNaN(r[2])&&r[2]<=end)
+  sales.filter(r=>r[0]&&r[1]&&r[3] instanceof Date&&!isNaN(r[3])&&r[3]<=end)
     .forEach(r=>{soldByEnd[String(r[1])]=true;});
   const activeAtEnd=inventory.filter(r=>r[0]&&r[1] instanceof Date&&!isNaN(r[1])&&r[1]<=end&&!soldByEnd[String(r[0])]);
   const endingInventory=activeAtEnd.reduce((n,r)=>n+Math.max(0,num3_(r[13])-(regular?num3_(r[11]):0)),0);

@@ -25,7 +25,7 @@ function inventoryFormHtml3_(existing) {
   .secondary{background:#6B7280}</style></head><body>
   <form id="f"><input type="hidden" name="row"><div class="grid">
   <div><label>Purchase date</label><input type="date" name="purchaseDate" required></div>
-  <div><label>Title</label><input name="title" required></div>
+  <div><label>Description</label><input name="description" required></div>
   <div><label>SKU</label><input name="sku"></div><div><label>Barcode</label><input name="barcode"></div>
   <div><label>Category</label><input name="category"></div><div><label>Purchase location</label><input name="purchaseLocation"></div>
   <div><label>Storage location</label><input name="storageLocation"></div><div><label>Condition</label><input name="condition"></div>
@@ -42,7 +42,7 @@ function inventoryFormHtml3_(existing) {
   <div class="actions"><button type="submit">Save Item</button><button type="button" class="secondary" onclick="google.script.host.close()">Cancel</button></div>
   </form><script>
   const old=${data};
-  if(old){const v=old.values;const m={row:old.row,purchaseDate:v[1] instanceof String?v[1]:'',title:v[2],sku:v[3],
+  if(old){const v=old.values;const m={row:old.row,purchaseDate:v[1] instanceof String?v[1]:'',description:v[2],sku:v[3],
   barcode:v[4],category:v[5],purchaseLocation:v[6],storageLocation:v[7],condition:v[8],quantity:v[9],
   purchasePrice:v[10],taxPaid:v[11],acquisitionShipping:v[12],expectedSalePrice:v[14],listedPrice:v[15],
   marketplace:v[16],status:v[18],receiptLink:v[22],photoLink:v[23],notes:v[24]};
@@ -54,7 +54,7 @@ function inventoryFormHtml3_(existing) {
 
 function findInventoryItem() {
   const ui = SpreadsheetApp.getUi();
-  const res = ui.prompt('Find Inventory Item','Enter Item ID, SKU, barcode, or title:',ui.ButtonSet.OK_CANCEL);
+  const res = ui.prompt('Find Inventory Item','Enter Item ID, SKU, barcode, or description:',ui.ButtonSet.OK_CANCEL);
   if (res.getSelectedButton() !== ui.Button.OK) return;
   const q = res.getResponseText().trim().toLowerCase();
   if (!q) return;
