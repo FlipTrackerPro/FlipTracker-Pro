@@ -1,0 +1,41 @@
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu('FlipTracker Pro')
+    .addItem('Install / Repair v0.8.0','installFlipTrackerPro')
+    .addItem('Upgrade Existing Workbook','upgradeFlipTrackerPro')
+    .addSeparator()
+    .addItem('Add Inventory Item','showAddItemForm')
+    .addItem('Edit Selected Inventory Item','showEditSelectedItemForm')
+    .addItem('Find Inventory Item','findInventoryItem')
+    .addItem('Show Slow Inventory','showSlowInventory')
+    .addSeparator()
+    .addItem('Complete Selected Pending Sale','completeSelectedPendingSale3_')
+    .addItem('Record Sale','showRecordSaleForm')
+    .addItem('Record Expense','showRecordExpenseForm')
+    .addItem('Record Mileage','showRecordMileageForm')
+    .addItem('Manage Mileage Lists','goToMileageLists70_')
+    .addItem('Refresh Mileage Dropdowns','refreshMileageDropdowns70_')
+    .addItem('Add Packaging Supply','showPackagingForm')
+    .addItem('Go to Packaging Inventory','goToPackagingInventory3_')
+    .addItem('Refresh Packaging Dropdowns','refreshPackagingDropdowns3_')
+    .addItem('Smart Shipping Assistant','showSmartShippingAssistant')
+    .addItem('Manage Shipping Rates','goToShippingSettings80_')
+    .addItem('Refresh Shipping Variance','refreshShippingVariance80_')
+    .addSeparator()
+    .addItem('Refresh Dashboard','refreshDashboardSprint3')
+    .addItem('Open CRA Tax Centre','goToTaxCentreV04')
+    .addItem('Refresh CRA Tax Centre','refreshTaxCentreV04')
+    .addItem('Build Accountant Export','buildAccountantExportV04_')
+    .addItem('Run Calculation Audit','runFlipTrackerCalculationAudit')
+    .addItem('Repair Sales Packaging IDs','repairSalesPackagingIds')
+    .addItem('Standardize Number Formats','standardizeFlipTrackerNumbers')
+    .addItem('Repair Packaging Cost Per Unit','repairPackagingCostPerUnit')
+    .addItem('Repair Packaging Cost Audit','repairPackagingCostAudit')
+    .addItem('Repair Expense Calculations','repairExpenseCalculations')
+    .addItem('Repair Inventory Calculations','repairInventoryCalculations')
+    .addItem('Go to Dashboard','goToDashboardSprint3')
+    .addToUi();
+}
+
+function initializeFlipTrackerProSprint3() { installFlipTrackerPro(); }
+
+function goToShippingSettings80_(){buildShippingSettings80_();SpreadsheetApp.getActive().setActiveSheet(sheet3_(FTP3.SHEETS.SHIPPING_SETTINGS));}
